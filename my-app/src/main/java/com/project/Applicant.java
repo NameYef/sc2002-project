@@ -3,16 +3,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Applicant implements IApplicant {
+    private String name;
     private String nric;
     private int age;
     private String maritalStatus;
     private String applicationStatus;
+    private String password;
     private List<String> inquiries; // Fixed: Initialized in the constructor
 
-    public Applicant(String nric, int age, String maritalStatus) {
+    public Applicant(String name, String nric, int age, String maritalStatus, String password) {
+        this.name = name;
         this.nric = nric;
         this.age = age;
         this.maritalStatus = maritalStatus;
+        this.password = password;
         this.applicationStatus = "Pending";
         this.inquiries = new ArrayList<>();  // Fixed: Properly initialized
     }
@@ -27,7 +31,7 @@ public class Applicant implements IApplicant {
         if (project.isEligible(this)) {
             project.addApplication(this);
             this.applicationStatus = "Pending";
-            System.out.println(nric + " applied for project: " + project.getProjectName());
+            System.out.println(nric + " applied for project: " + project.getName());
         } else {
             System.out.println("Applicant not eligible for this project.");
         }
@@ -85,7 +89,9 @@ public class Applicant implements IApplicant {
             System.out.println("No inquiries to delete.");
         }
     }
-
+    public String getName() {
+        return name;
+    }
     public String getNric() { return nric; }
     public int getAge() { return age; }
     public String getMaritalStatus() { return maritalStatus; }

@@ -14,4 +14,8 @@ public class Manager {
         this.maritalStatus = maritalStatus;
         this.password = password;
     }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -3,12 +3,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Project implements IProject {
-    private String projectName;
+    private String name;
     private boolean visibility;
     private List<Applicant> applicants;
 
-    public Project(String projectName) {
-        this.projectName = projectName;
+    public Project(String name) {
+        this.name = name;
         this.visibility = true;  // Default visibility is ON
         this.applicants = new ArrayList<>(); // Fixed: Properly initialized
     }
@@ -16,7 +16,7 @@ public class Project implements IProject {
     @Override
     public void toggleVisibility(boolean isVisible) {
         this.visibility = isVisible;
-        System.out.println("Project " + projectName + " visibility set to: " + isVisible);
+        System.out.println("Project " + name + " visibility set to: " + isVisible);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class Project implements IProject {
     @Override
     public boolean isEligible(Applicant applicant) {
         if (applicant.getMaritalStatus().equals("Single") && applicant.getAge() >= 35) {
-            return projectName.equals("2-Room");  // Single applicants 35+ can apply for 2-Room only
+            return name.equals("2-Room");  // Single applicants 35+ can apply for 2-Room only
         }
         if (applicant.getMaritalStatus().equals("Married") && applicant.getAge() >= 21) {
             return true;  // Married applicants can apply for any flat type
@@ -39,11 +39,11 @@ public class Project implements IProject {
     public void addApplication(Applicant applicant) {
         if (isEligible(applicant)) {
             applicants.add(applicant);
-            System.out.println("Applicant " + applicant.getNric() + " applied for " + projectName);
+            System.out.println("Applicant " + applicant.getNric() + " applied for " + name);
         } else {
-            System.out.println("Applicant " + applicant.getNric() + " is not eligible for " + projectName);
+            System.out.println("Applicant " + applicant.getNric() + " is not eligible for " + name);
         }
     }
 
-    public String getProjectName() { return projectName; }
+    public String getName() { return name; }
 }

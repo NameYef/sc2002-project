@@ -10,43 +10,72 @@ import java.util.List;
 
 public class MainApplication 
 {
-    private ArrayList<Project> projectList;
-    private ArrayList<Applicant> applicantList;
-    // 2 more arrays for officers and managers
+    private static List<Project> projectList;
+    private static List<Applicant> applicantList;
+    private static List<Manager> managerList;
+    private static List<Officer> officerList;
 
-    public void read_excel(String filePath, ArrayList<?> list) {
-        // String filePath = "./data/ApplicantList.xlsx";  // Change this to your actual file path
+    public static List<?> read_excel(String filePath) {
+        List<Object> dataList = new ArrayList<>();
+        String fileName = new File(filePath).getName().toLowerCase();
+        try (FileInputStream file = new FileInputStream(new File(filePath));
+        Workbook workbook = new XSSFWorkbook(file)) {
 
-        // try (FileInputStream file = new FileInputStream(new File(filePath));
-        //      Workbook workbook = new XSSFWorkbook(file)) {
+        Sheet sheet = workbook.getSheetAt(0); // Assume each file has 1 sheet
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) continue; // Skip header row
 
-        //     Sheet sheet = workbook.getSheetAt(0);  // Read the first sheet
+            if (fileName.contains("project")) {
+                String name = row.getCell(0).getStringCellValue();
 
-        //     for (Row row : sheet) {  // Iterate through rows
-        //         for (Cell cell : row) {  // Iterate through columns
-        //             switch (cell.getCellType()) {
-        //                 case STRING:
-        //                     System.out.print(cell.getStringCellValue() + "\t");
-        //                     break;
-        //                 case NUMERIC:
-        //                     System.out.print(cell.getNumericCellValue() + "\t");
-        //                     break;
-        //                 case BOOLEAN:
-        //                     System.out.print(cell.getBooleanCellValue() + "\t");
-        //                     break;
-        //                 default:
-        //                     System.out.print("UNKNOWN\t");
-        //             }
-        //         }
-        //         System.out.println();
-        //     }
+                dataList.add(new Project(name));
 
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
+            } else if (fileName.contains("applicant")) {
+                String name = row.getCell(0).getStringCellValue();
+                String nric = row.getCell(1).getStringCellValue();
+                int age = (int) row.getCell(2).getNumericCellValue();
+                String maritalStatus = row.getCell(3).getStringCellValue();
+                String password = row.getCell(4).getStringCellValue();
+                dataList.add(new Applicant(name, nric, age, maritalStatus, password));
+
+            } else if (fileName.contains("manager")) {
+                String name = row.getCell(0).getStringCellValue();
+                String nric = row.getCell(1).getStringCellValue();
+                int age = (int) row.getCell(2).getNumericCellValue();
+                String maritalStatus = row.getCell(3).getStringCellValue();
+                String password = row.getCell(4).getStringCellValue();
+                dataList.add(new Manager(name, nric, age, maritalStatus, password));
+
+            } else if (fileName.contains("officer")) {
+                String name = row.getCell(0).getStringCellValue();
+                String nric = row.getCell(1).getStringCellValue();
+                int age = (int) row.getCell(2).getNumericCellValue();
+                String maritalStatus = row.getCell(3).getStringCellValue();
+                String password = row.getCell(4).getStringCellValue();
+                dataList.add(new Officer(name, nric, age, maritalStatus, password));
+            }
+        }
+
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+
+    return dataList;
+        
+    }
+
+    public static void initializeList() {
+        projectList = (List<Project>) read_excel("./data/ProjectList.xlsx");
+        applicantList = (List<Applicant>) read_excel("./data/ApplicantList.xlsx");
+        managerList = (List<Manager>) read_excel("./data/ManagerList.xlsx");
+        officerList = (List<Officer>) read_excel("./data/OfficerList.xlsx");
+    }
+    
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+
+        initializeList();
+        System.out.println("Excel data loaded");
+
     }
 }
