@@ -1,25 +1,21 @@
 package com.project;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-public class Applicant implements IApplicant {
-    private String name;
-    private String nric;
-    private int age;
-    private String maritalStatus;
+public class Applicant extends User implements IApplicant {
+
     private String applicationStatus;
-    private String password;
     private List<String> inquiries; // Fixed: Initialized in the constructor
 
     public Applicant(String name, String nric, int age, String maritalStatus, String password) {
-        this.name = name;
-        this.nric = nric;
-        this.age = age;
-        this.maritalStatus = maritalStatus;
-        this.password = password;
+        super(name, nric, age, maritalStatus, password);
         this.applicationStatus = "Pending";
         this.inquiries = new ArrayList<>();  // Fixed: Properly initialized
     }
+
+    public String getApplicationStatus() { return applicationStatus; }
+    public String getPassword() { return password; }
 
     @Override
     public void viewProjects() {
@@ -89,11 +85,34 @@ public class Applicant implements IApplicant {
             System.out.println("No inquiries to delete.");
         }
     }
-    public String getName() {
-        return name;
+
+    @Override
+    public String getRole() {
+        return "Applicant";
     }
-    public String getNric() { return nric; }
-    public int getAge() { return age; }
-    public String getMaritalStatus() { return maritalStatus; }
-    public String getApplicationStatus() { return applicationStatus; }
+
+    @Override
+    public String showInterface(Scanner scanner) {
+        while (true) {
+            System.out.println(" Applicant Menu:");
+            System.out.println("1. Reset Password");
+            System.out.println("2. Logout");
+            System.out.println("3. Quit");
+            System.out.print("Choice: ");
+            String input = scanner.nextLine();
+
+            switch (input) {
+                case "1":
+                    resetPassword(scanner);
+                    break;
+                case "2":
+                    return "logout";
+                case "3":
+                    return "quit";
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+    }
+
 }

@@ -1,21 +1,39 @@
 package com.project;
 
-public class Officer {
-    private String name;
-    private String nric;
-    private int age;
-    private String maritalStatus;
-    private String password;
+import java.util.Scanner;
+
+public class Officer extends Applicant{
 
     public Officer(String name, String nric, int age, String maritalStatus, String password) {
-        this.name = name;
-        this.nric = nric;
-        this.age = age;
-        this.maritalStatus = maritalStatus;
-        this.password = password;
+        super(name, nric, age, maritalStatus, password);
+    }
+    @Override
+    public String getRole() {
+        return "Officer";
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String showInterface(Scanner scanner) {
+        while (true) {
+            System.out.println(" Officer Menu:");
+            System.out.println("1. Reset Password");
+            System.out.println("2. Logout");
+            System.out.println("3. Quit");
+            System.out.print("Choice: ");
+            String input = scanner.nextLine();
+
+            switch (input) {
+                case "1":
+                    resetPassword(scanner);
+                    break;
+                case "2":
+                    return "logout";
+                case "3":
+                    return "quit";
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
     }
 }
+
