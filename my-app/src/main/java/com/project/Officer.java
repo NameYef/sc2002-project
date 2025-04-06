@@ -1,7 +1,7 @@
 package com.project;
 
 import java.util.Scanner;
-
+import java.util.List;
 public class Officer extends Applicant{
 
     public Officer(String name, String nric, int age, String maritalStatus, String password) {
@@ -13,7 +13,7 @@ public class Officer extends Applicant{
     }
 
     @Override
-    public String showInterface(Scanner scanner) {
+    public String showInterface(Scanner scanner, List<Project> projectList) {
         while (true) {
             System.out.println(" Officer Menu:");
             System.out.println("1. Reset Password");

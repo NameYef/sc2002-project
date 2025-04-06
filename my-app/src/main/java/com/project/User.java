@@ -1,6 +1,7 @@
 package com.project;
 
 import java.util.Scanner;
+import java.util.List;
 
 public abstract class User {
     
@@ -25,7 +26,7 @@ public abstract class User {
 
 
     public abstract String getRole();
-    public abstract String showInterface(Scanner scanner);
+    public abstract String showInterface(Scanner scanner, List<Project> projectList);
 
     public void resetPassword(Scanner scanner) {
         System.out.print("Enter new password: ");

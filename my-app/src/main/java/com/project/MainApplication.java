@@ -23,8 +23,6 @@ public class MainApplication
     private static User currentUser;
 
 
-
-
     public static List<?> read_excel(String filePath) {
         List<Object> dataList = new ArrayList<>();
         String fileName = new File(filePath).getName().toLowerCase();
@@ -148,7 +146,7 @@ public class MainApplication
             loggedIn = login();
 
             while (loggedIn) {
-                String action = currentUser.showInterface(scanner);
+                String action = currentUser.showInterface(scanner, projectList);
                 switch (action) {
                     case "logout":
                         loggedIn = false;

@@ -92,7 +92,7 @@ public class Applicant extends User implements IApplicant {
     }
 
     @Override
-    public String showInterface(Scanner scanner) {
+    public String showInterface(Scanner scanner, List<Project> projectList) {
         while (true) {
             System.out.println(" Applicant Menu:");
             System.out.println("1. Reset Password");
