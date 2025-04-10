@@ -15,15 +15,15 @@ public class Project implements IProject {
     private int priceType2;
     private LocalDate openDate;
     private LocalDate closeDate;
-    private String manager;
+    private String managerStr;
     private int officerSlot;
-    private List<String> officers;
+    private List<String> officersStr;
 
 
     private boolean visibility;
     private List<Applicant> applicants;
 
-    public Project(String name, String neighborhood, String type1, int noType1, int priceType1, String type2, int noType2, int priceType2, LocalDate openDate, LocalDate closeDate, String manager, int officerSlot, List<String> officers) {
+    public Project(String name, String neighborhood, String type1, int noType1, int priceType1, String type2, int noType2, int priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr) {
         this.name = name;
         this.neighborhood = neighborhood;
         this.type1 = type1;
@@ -34,9 +34,9 @@ public class Project implements IProject {
         this.priceType2 = priceType2;
         this.openDate = openDate;
         this.closeDate = closeDate;
-        this.manager = manager;
+        this.managerStr = managerStr;
         this.officerSlot = officerSlot;
-        this.officers = officers;
+        this.officersStr = officersStr;
 
 
         this.visibility = true;  // Default visibility is ON
@@ -152,11 +152,11 @@ public class Project implements IProject {
     }
 
     public String getManager() {
-        return manager;
+        return managerStr;
     }
 
     public void setManager(String manager) {
-        this.manager = manager;
+        this.managerStr = manager;
     }
 
     public int getOfficerSlot() {
@@ -168,10 +168,10 @@ public class Project implements IProject {
     }
 
     public List<String> getOfficers() {
-        return officers;
+        return officersStr;
     }
 
     public void setOfficers(List<String> officers) {
-        this.officers = officers;
+        this.officersStr = officers;
     }
 }
