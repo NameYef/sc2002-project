@@ -28,10 +28,11 @@ public abstract class User {
     public abstract String getRole();
     public abstract String showInterface(Scanner scanner, List<Project> projectList);
 
-    public void resetPassword(Scanner scanner) {
+    public String resetPassword(Scanner scanner) {
         System.out.print("Enter new password: ");
         String newPass = scanner.nextLine();
         this.password = newPass;
         System.out.println("Password successfully updated.");
+        return "logout";
     }
 }

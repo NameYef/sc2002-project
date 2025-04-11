@@ -103,8 +103,7 @@ public class Applicant extends User implements IApplicant {
 
             switch (input) {
                 case "1":
-                    resetPassword(scanner);
-                    break;
+                    return resetPassword(scanner);
                 case "2":
                     return "logout";
                 case "3":
