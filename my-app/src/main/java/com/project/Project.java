@@ -174,4 +174,8 @@ public class Project implements IProject {
     public void setOfficers(List<String> officers) {
         this.officersStr = officers;
     }
+
+    public void addApplicant(Applicant applicant) {
+        applicants.add(applicant);
+    }
 }

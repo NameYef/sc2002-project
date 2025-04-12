@@ -36,7 +36,7 @@ public class Applicant extends User implements IApplicant {
         LocalDate today = LocalDate.now();
         for (Project project : projectList) {
             if (!project.isVisible()) continue;
-            
+
             // Uncomment below if you want to also consider open dates and close dates
 
             // if (today.isBefore(project.getOpenDate()) || today.isAfter(project.getCloseDate())) {
@@ -111,6 +111,7 @@ public class Applicant extends User implements IApplicant {
                 } else {
                     appliedType = "type1";
                     applicationStatus = "pending";
+                    appliedProject.addApplicant(this);
                     System.out.println("Successfully applied for " + appliedProject.getName() + " (" + appliedProject.getType1() + ")");
                 }
                 break;
@@ -122,6 +123,7 @@ public class Applicant extends User implements IApplicant {
                 } else {
                     appliedType = "type2";
                     applicationStatus = "pending";
+                    appliedProject.addApplicant(this);
                     System.out.println("Successfully applied for " + appliedProject.getName() + " (" + appliedProject.getType2() + ")");
                 }
                 break;
@@ -196,9 +198,9 @@ public class Applicant extends User implements IApplicant {
 
     @Override
     public String showInterface(Scanner scanner, List<Project> projectList) {
-        if (this.elligibleProjects.isEmpty()) {
-            this.fillElligibleProjects(projectList);
-        }
+
+        this.fillElligibleProjects(projectList);
+        
         while (true) {
             System.out.println(" Applicant Menu:");
             System.out.println("1. View Projects");
