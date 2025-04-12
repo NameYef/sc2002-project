@@ -57,7 +57,7 @@ public class Project implements IProject {
     @Override
     public boolean isEligible(Applicant applicant) {
         if (applicant.getMaritalStatus().equals("Single") && applicant.getAge() >= 35) {
-            return name.equals("2-Room");  // Single applicants 35+ can apply for 2-Room only
+            return type1.equals("2-Room") || type2.equals("2-Room");  // Single applicants 35+ can apply for 2-Room only
         }
         if (applicant.getMaritalStatus().equals("Married") && applicant.getAge() >= 21) {
             return true;  // Married applicants can apply for any flat type
