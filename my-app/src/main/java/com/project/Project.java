@@ -22,6 +22,7 @@ public class Project implements IProject {
 
     private boolean visibility;
     private List<Applicant> applicants;
+    private List<Inquiry> inquiries = new ArrayList<>();
 
     public Project(String name, String neighborhood, String type1, int noType1, int priceType1, String type2, int noType2, int priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr) {
         this.name = name;
@@ -177,5 +178,18 @@ public class Project implements IProject {
 
     public void addApplicant(Applicant applicant) {
         applicants.add(applicant);
+    }
+
+    public void removeApplicant(Applicant applicant) {
+        applicants.remove(applicant);
+    }
+    
+
+    public void addInquiry(Inquiry inquiry) {
+        inquiries.add(inquiry);
+    }
+    
+    public List<Inquiry> getInquiries() {
+        return inquiries;
     }
 }
