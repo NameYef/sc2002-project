@@ -17,6 +17,7 @@ public class Inquiry {
     public Applicant getApplicant() { return applicant; }
     public String getMessage() { return message; }
     public String getReply() { return reply; }
+    public boolean isReplied() { return reply != null; }
     public void setReply(String reply) { this.reply = reply; }
     public void setMessage(String message) { this.message = message;}
     public String toString() {
