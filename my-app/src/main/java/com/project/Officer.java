@@ -10,6 +10,7 @@ public class Officer extends Applicant{
     List<Project> undertakenProjects;
     private String registrationStatus = "Not Registered";
     private Project registeredProject = null;
+    public static List<String> pendingOfficer = new ArrayList<>();
 
     public Officer(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
@@ -136,6 +137,7 @@ public class Officer extends Applicant{
             }
             else{
                 registeredProject = selected;
+                pendingOfficer.add(getName());
                 registrationStatus = "Pending";
                 System.out.println("Registration submitted. Awaiting manager approval.");
             }
