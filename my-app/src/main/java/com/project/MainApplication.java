@@ -25,7 +25,7 @@ public class MainApplication {
 
             LoginService loginService = new LoginService(allUsers);
             User currentUser = null;
-
+            System.out.println(projectList.get(0).getOfficers().get(0));
             while (run) {
                 currentUser = loginService.login(scanner);
                 if (currentUser == null) continue;

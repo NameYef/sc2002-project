@@ -6,29 +6,29 @@ import java.util.Scanner;
 
 public class Applicant extends User {
 
-    private String applicationStatus;
-    private String flatTypeBooked; // type1 or type2, set by Officer
-    private Project appliedProject;
-    private String appliedType; // stored this just in case, value can only be type1 or type2
-    private List<Project> elligibleProjects;
+    protected String applicationStatus;
+    protected String flatTypeBooked; // type1 or type2, set by Officer
+    protected Project appliedProject;
+    protected String appliedType; // stored this just in case, value can only be type1 or type2
+    protected List<Project> elligibleProjects;
 
     public Applicant(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
-        this.applicationStatus = "N/A";
+        this.applicationStatus = "Unsuccessful";
         this.elligibleProjects = new ArrayList<>();
     }
 
     public String getApplicationStatus() { return applicationStatus; }
     public String getPassword() { return password; }
     
-    private boolean isEligibleForFlatType(String flatType) {
+    protected boolean isEligibleForFlatType(String flatType) {
         if (maritalStatus.equals("Married") && age >= 21) {
             return true;
         }
         return maritalStatus.equals("Single") && age >= 35 && flatType.equals("2-Room");
     }
     
-    public void fillElligibleProjects(List<Project> projectList) {
+    protected void fillElligibleProjects(List<Project> projectList) {
         elligibleProjects.clear(); 
     
         LocalDate today = LocalDate.now();
@@ -50,7 +50,7 @@ public class Applicant extends User {
         }
     }
     
-    private void displayFlatType(Project project, String typeLabel, String flatType, int units, double price) {
+    protected void displayFlatType(Project project, String typeLabel, String flatType, int units, double price) {
         if (!isEligibleForFlatType(flatType)) return;
     
         System.out.println(project.getName());
@@ -65,18 +65,44 @@ public class Applicant extends User {
     
 
     // @Override
-    public void viewProjects() {
-        System.out.println("Viewing available projects for Applicant (" + maritalStatus + ", " + age + " years old).");
-
+    protected void viewProjects() {
+        System.out.println("Viewing available projects for " + this.getRole() + " (" + maritalStatus + ", " + age + " years old).");
+        System.out.println("Current Filters -> Neighborhood: " + 
+            (filterNeighborhood == null ? "All" : filterNeighborhood) + 
+            ", Flat Type: " + (filterFlatType == null ? "All" : filterFlatType));
+    
         for (Project project : elligibleProjects) {
-            displayFlatType(project, "Type1", project.getType1(), project.getNoType1(), project.getPriceType1());
-            displayFlatType(project, "Type2", project.getType2(), project.getNoType2(), project.getPriceType2());
+            // Filter by neighborhood if set
+            if (filterNeighborhood != null && !project.getNeighborhood().equalsIgnoreCase(filterNeighborhood)) {
+                continue;
+            }
+    
+            // Filter by flat type before displaying
+            if (filterFlatType == null || filterFlatType.equalsIgnoreCase(project.getType1())) {
+                displayFlatType(project, "Type1", project.getType1(), project.getNoType1(), project.getPriceType1());
+            }
+            if (filterFlatType == null || filterFlatType.equalsIgnoreCase(project.getType2())) {
+                displayFlatType(project, "Type2", project.getType2(), project.getNoType2(), project.getPriceType2());
+            }
         }
     }
+    
+    protected void setProjectFilters(Scanner scanner) {
+        System.out.print("Enter neighborhood to filter by (or press Enter for all): ");
+        String inputNeighborhood = scanner.nextLine().trim();
+        filterNeighborhood = inputNeighborhood.isEmpty() ? null : inputNeighborhood;
+    
+        System.out.print("Enter flat type to filter by (2-Room / 3-Room or press Enter for all): ");
+        String inputFlatType = scanner.nextLine().trim();
+        filterFlatType = inputFlatType.isEmpty() ? null : inputFlatType;
+    
+        System.out.println("Filters updated.");
+    }
+    
 
     // @Override
     public void applyForProject(Scanner scanner) {
-        if (this.appliedProject != null) {
+        if (this.appliedProject != null || !this.applicationStatus.equals("Unsuccessful")) {
             System.out.println("You have already applied for a project.");
             return;
         }
@@ -108,7 +134,7 @@ public class Applicant extends User {
                     this.appliedProject = null;
                 } else {
                     appliedType = "type1";
-                    applicationStatus = "pending";
+                    applicationStatus = "Pending";
                     this.appliedProject.addApplicant(this);
                     System.out.println("Successfully applied for " + this.appliedProject.getName() + " (" + this.appliedProject.getType1() + ")");
                 }
@@ -120,7 +146,7 @@ public class Applicant extends User {
                     this.appliedProject = null;
                 } else {
                     appliedType = "type2";
-                    applicationStatus = "pending";
+                    applicationStatus = "Pending";
                     this.appliedProject.addApplicant(this);
                     System.out.println("Successfully applied for " + this.appliedProject.getName() + " (" + this.appliedProject.getType2() + ")");
                 }
@@ -144,9 +170,9 @@ public class Applicant extends User {
     // @Override
     public void withdrawApplication() {
         if (this.appliedProject != null) {
-            this.applicationStatus = "N/A";
-            this.appliedProject = null;
-            this.appliedType = "";
+            this.applicationStatus = "Unsuccessful";
+            // this.appliedProject = null;
+            // this.appliedType = "";
             this.appliedProject.removeApplicant(this); 
 
             System.out.println("Application has been withdrawn.");
@@ -331,13 +357,14 @@ public class Applicant extends User {
         while (true) {
             System.out.println(" Applicant Menu:");
             System.out.println("1. View Projects");
-            System.out.println("2. Apply For a Project");
-            System.out.println("3. View Applied Project"); 
-            System.out.println("4. Request for withdrawal");
-            System.out.println("5. Enquiries");
-            System.out.println("6. Reset Password");
-            System.out.println("7. Logout");
-            System.out.println("8. Quit");
+            System.out.println("2. Change Filters");
+            System.out.println("3. Apply For a Project");
+            System.out.println("4. View Applied Project"); 
+            System.out.println("5. Request for withdrawal");
+            System.out.println("6. Enquiries");
+            System.out.println("7. Reset Password");
+            System.out.println("8. Logout");
+            System.out.println("9. Quit");
             System.out.print("Choice: ");
             String input = scanner.nextLine();
 
@@ -346,22 +373,25 @@ public class Applicant extends User {
                     viewProjects();
                     break;
                 case "2":
-                    applyForProject(scanner);
+                    setProjectFilters(scanner);
                     break;
                 case "3":
-                    viewApplicationStatus();
+                    applyForProject(scanner);
                     break;
                 case "4":
-                    withdrawApplication();
+                    viewApplicationStatus();
                     break;
                 case "5":
-                    showInquiryInterface(scanner, projectList);
+                    withdrawApplication();
                     break;
                 case "6":
-                    return resetPassword(scanner);
+                    showInquiryInterface(scanner, projectList);
+                    break;
                 case "7":
-                    return "logout";
+                    return resetPassword(scanner);
                 case "8":
+                    return "logout";
+                case "9":
                     return "quit";
                 default:
                     System.out.println("Invalid choice.");
