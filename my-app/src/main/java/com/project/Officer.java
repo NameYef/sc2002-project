@@ -8,7 +8,8 @@ import java.util.List;
 public class Officer extends Applicant{
 
     List<Project> undertakenProjects;
-
+    private String registrationStatus = "Not Registered";
+    private Project registeredProject = null;
 
     public Officer(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
@@ -99,7 +100,107 @@ public class Officer extends Applicant{
         System.out.println("Reply recorded.");
     }
     
-    
+    public void registerAsOfficer(Scanner scanner, List<Project> projectList) {
+        System.out.println("\n--- Register as HDB Officer ---");
+        for (int i = 0; i < projectList.size(); i++) {
+            Project p = projectList.get(i);
+            if (!p.getOfficers().contains(this.name)) {
+                System.out.println("[" + (i + 1) + "] " + p.getName());
+            }
+        }
+
+        System.out.print("Select project number to register for: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine()) - 1;
+            if (idx < 0 || idx >= projectList.size()) {
+                System.out.println("Invalid index.");
+                return;
+            }
+
+            Project selected = projectList.get(idx);
+            // check if officer already in officers list
+            boolean alreadyOfficer = selected.getOfficers().contains(this.name);
+
+            // check if officer already applied as applicant
+            boolean alreadyApplicant = false;
+            for (Applicant app : selected.getApplicants()) {
+                if (app.getNric().equalsIgnoreCase(this.nric)) {
+                    alreadyApplicant = true;
+                    break;
+                }
+            }
+
+            if (alreadyOfficer || alreadyApplicant) {
+                System.out.println("You're already registered or applied to this project.");
+                return;
+            }
+            else{
+                registeredProject = selected;
+                registrationStatus = "Pending";
+                System.out.println("Registration submitted. Awaiting manager approval.");
+            }
+            
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
+    }
+
+    public void viewRegistrationStatus() {
+        System.out.println("Officer Registration Status: " + registrationStatus);
+        if (registeredProject != null) {
+            System.out.println("Registered Project: " + registeredProject.getName());
+        }
+    }
+
+    public void bookFlat(Scanner scanner, List<Applicant> applicants) {
+        System.out.println("\n--- Flat Booking ---");
+
+        System.out.print("Enter applicant NRIC: ");
+        String nric = scanner.nextLine().trim();
+
+        for (Applicant app : applicants) {
+            if (app.getNric().equalsIgnoreCase(nric)) {
+                if (!app.getApplicationStatus().equals("Successful")) {
+                    System.out.println("This applicant is not approved for booking.");
+                    return;
+                }
+
+                Project proj = app.appliedProject;
+                System.out.println("Flat Type applied: " + app.appliedType);
+
+                if (app.appliedType.equals("type1") && proj.getNoType1() > 0) {
+                    proj.setNoType1(proj.getNoType1() - 1);
+                    app.applicationStatus = "Booked";
+                    app.flatTypeBooked = proj.getType1();
+                } else if (app.appliedType.equals("type2") && proj.getNoType2() > 0) {
+                    proj.setNoType2(proj.getNoType2() - 1);
+                    app.applicationStatus = "Booked";
+                    app.flatTypeBooked = proj.getType2();
+                } else {
+                    System.out.println("No more units left for the selected flat type.");
+                    return;
+                }
+
+                System.out.println("Booking confirmed");
+                generateReceipt(app);
+                return;
+            }
+        }
+
+        System.out.println("Applicant not found.");
+    }
+
+    public void generateReceipt(Applicant app) {
+        System.out.println("\n===== Booking Receipt =====");
+        System.out.println("Name: " + app.getName());
+        System.out.println("NRIC: " + app.getNric());
+        System.out.println("Age: " + app.getAge());
+        System.out.println("Marital Status: " + app.getMaritalStatus());
+        System.out.println("Flat Type Booked: " + app.flatTypeBooked);
+        System.out.println("Project Name: " + app.appliedProject.getName());
+        System.out.println("Neighborhood: " + app.appliedProject.getNeighborhood());
+        System.out.println("===========================");
+    }
     @Override
     public String showInterface(Scanner scanner, List<Project> projectList) {
         this.fillElligibleProjects(projectList);
@@ -107,7 +208,7 @@ public class Officer extends Applicant{
         while (true) {
             System.out.println("Officer Menu:");
             System.out.println("Applicant functions");
-            System.out.println("1. Show Elligible Projects for Application");
+            System.out.println("1. Show Eligible Projects for Application");
             System.out.println("2. Change Filters");
             System.out.println("3. Apply For a Project");
             System.out.println("4. View Applied Project"); 
@@ -120,11 +221,13 @@ public class Officer extends Applicant{
 
 
 
-
+            System.out.println("9. Register for Project");
+            System.out.println("10. View Registration Status");
+            System.out.println("11. Book Flat for Applicant");
             System.out.println("-----------------");
-            System.out.println("9. Reset Password");
-            System.out.println("10. Logout");
-            System.out.println("11. Quit");
+            System.out.println("12. Reset Password");
+            System.out.println("13. Logout");
+            System.out.println("14. Quit");
             System.out.print("Choice: ");
             String input = scanner.nextLine();
             switch (input) {
@@ -153,11 +256,20 @@ public class Officer extends Applicant{
                     replyToInquiry(scanner);
                     break;
                 case "9":
-                    return resetPassword(scanner);
+                    registerAsOfficer(scanner, projectList);
+                    break;
                 case "10":
-                    return "logout";
+                    viewRegistrationStatus(); 
+                    break;
                 case "11":
-                    return"quit";
+                    bookFlat(scanner, findAllApplicants(projectList));
+                    break;
+                case "12":
+                    return resetPassword(scanner);
+                case "13":
+                    return "logout";
+                case "14":
+                    return "quit";
                 default:
                     System.out.println("Invalid choice.");
             }
@@ -166,6 +278,13 @@ public class Officer extends Applicant{
         }
         
         
+    }
+    private List<Applicant> findAllApplicants(List<Project> projects) {
+        List<Applicant> result = new java.util.ArrayList<>();
+        for (Project p : projects) {
+            result.addAll(p.getApplicants());
+        }
+        return result;
     }
 }
 

@@ -192,4 +192,9 @@ public class Project implements IProject {
     public List<Inquiry> getInquiries() {
         return inquiries;
     }
+    
+    public List<Applicant> getApplicants() {
+        return applicants;
+    }
+    
 }
