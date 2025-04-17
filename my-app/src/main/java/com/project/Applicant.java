@@ -68,20 +68,20 @@ public class Applicant extends User {
     protected void viewProjects() {
         System.out.println("Viewing available projects for " + this.getRole() + " (" + maritalStatus + ", " + age + " years old).");
         System.out.println("Current Filters -> Neighborhood: " + 
-            (filterNeighborhood == null ? "All" : filterNeighborhood) + 
-            ", Flat Type: " + (filterFlatType == null ? "All" : filterFlatType));
+            (this.filterNeighborhood == null ? "All" : this.filterNeighborhood) + 
+            ", Flat Type: " + (this.filterFlatType == null ? "All" : this.filterFlatType));
     
         for (Project project : elligibleProjects) {
             // Filter by neighborhood if set
-            if (filterNeighborhood != null && !project.getNeighborhood().equalsIgnoreCase(filterNeighborhood)) {
+            if (this.filterNeighborhood != null && !project.getNeighborhood().equalsIgnoreCase(this.filterNeighborhood)) {
                 continue;
             }
     
             // Filter by flat type before displaying
-            if (filterFlatType == null || filterFlatType.equalsIgnoreCase(project.getType1())) {
+            if (this.filterFlatType == null || this.filterFlatType.equalsIgnoreCase(project.getType1())) {
                 displayFlatType(project, "Type1", project.getType1(), project.getNoType1(), project.getPriceType1());
             }
-            if (filterFlatType == null || filterFlatType.equalsIgnoreCase(project.getType2())) {
+            if (this.filterFlatType == null || this.filterFlatType.equalsIgnoreCase(project.getType2())) {
                 displayFlatType(project, "Type2", project.getType2(), project.getNoType2(), project.getPriceType2());
             }
         }
@@ -90,11 +90,11 @@ public class Applicant extends User {
     protected void setProjectFilters(Scanner scanner) {
         System.out.print("Enter neighborhood to filter by (or press Enter for all): ");
         String inputNeighborhood = scanner.nextLine().trim();
-        filterNeighborhood = inputNeighborhood.isEmpty() ? null : inputNeighborhood;
+        this.filterNeighborhood = inputNeighborhood.isEmpty() ? null : inputNeighborhood;
     
         System.out.print("Enter flat type to filter by (2-Room / 3-Room or press Enter for all): ");
         String inputFlatType = scanner.nextLine().trim();
-        filterFlatType = inputFlatType.isEmpty() ? null : inputFlatType;
+        this.filterFlatType = inputFlatType.isEmpty() ? null : inputFlatType;
     
         System.out.println("Filters updated.");
     }

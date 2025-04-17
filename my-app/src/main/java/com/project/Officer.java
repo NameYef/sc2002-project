@@ -103,7 +103,6 @@ public class Officer extends Applicant{
     @Override
     public String showInterface(Scanner scanner, List<Project> projectList) {
         this.fillElligibleProjects(projectList);
-        System.out.println(elligibleProjects);
         this.undertakenProjects = projectList.stream().filter(obj->obj.getOfficers().contains(this.name)).collect(Collectors.toList());
         while (true) {
             System.out.println("Officer Menu:");
@@ -121,7 +120,7 @@ public class Officer extends Applicant{
 
 
 
-            
+
             System.out.println("-----------------");
             System.out.println("9. Reset Password");
             System.out.println("10. Logout");
