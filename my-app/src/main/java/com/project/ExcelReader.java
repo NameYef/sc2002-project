@@ -39,10 +39,11 @@ public class ExcelReader {
                         .map(String::trim)
                         .collect(Collectors.toList());
 
+                boolean visibility = row.getCell(13).getBooleanCellValue();
                 
 
                 projects.add(new Project(name, neighborhood, type1, noType1, priceType1, type2, noType2, priceType2,
-                        openDate, closeDate, manager, officerSlot, officers));
+                        openDate, closeDate, manager, officerSlot, officers, visibility));
             }
         }
         return projects;

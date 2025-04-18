@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Applicant extends User {
 
@@ -60,7 +61,11 @@ public class Applicant extends User {
         System.out.println("Selling Price: " + price);
         System.out.println("Application Start Date: " + project.getOpenDate());
         System.out.println("Application Close Date: " + project.getCloseDate());
-        // System.out.println("Officers: " + String.join(", ", project.getOfficersStr()));
+        System.out.println("Officers: " + 
+            project.getOfficers().stream()
+                .map(Officer::getName) // extract the name
+                .collect(Collectors.joining(", "))
+        );
         System.out.println("Manager: " + project.getManager().getName());
         
         System.out.println("---------------------------");
@@ -180,7 +185,11 @@ public class Applicant extends User {
 
             System.out.println("Application Start Date: " + this.appliedProject.getOpenDate());
             System.out.println("Application Close Date: " + this.appliedProject.getCloseDate());
-            // System.out.println("Officers: " + String.join(", ", this.appliedProject.getOfficers()));
+            System.out.println("Officers: " + 
+                this.appliedProject.getOfficers().stream()
+                    .map(Officer::getName) // extract the name
+                    .collect(Collectors.joining(", "))
+            );
             System.out.println("Manager: " + this.appliedProject.getManager().getName());
         }
         System.out.println("Application Status: " + this.applicationStatus);

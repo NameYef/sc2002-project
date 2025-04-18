@@ -26,7 +26,7 @@ public class Project implements IProject {
     private List<Applicant> applicants;
     private List<Inquiry> inquiries = new ArrayList<>();
 
-    public Project(String name, String neighborhood, String type1, int noType1, int priceType1, String type2, int noType2, int priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr) {
+    public Project(String name, String neighborhood, String type1, int noType1, int priceType1, String type2, int noType2, int priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr, boolean visibility) {
         this.name = name;
         this.neighborhood = neighborhood;
         this.type1 = type1;
@@ -42,7 +42,7 @@ public class Project implements IProject {
         this.officersStr = officersStr;
 
 
-        this.visibility = true;  // Default visibility is ON
+        this.visibility = visibility;  
         this.applicants = new ArrayList<>(); // Fixed: Properly initialized
     }
 
