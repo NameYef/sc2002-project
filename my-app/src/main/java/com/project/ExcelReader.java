@@ -39,7 +39,7 @@ public class ExcelReader {
                 LocalDate closeDate = toLocalDate(row.getCell(9).getDateCellValue());
                 String manager = row.getCell(10).getStringCellValue();
                 int officerSlot = (int) row.getCell(11).getNumericCellValue();
-                Cell officerCell = row.getCell(14);
+                Cell officerCell = row.getCell(12);
                 List<String> officers = new ArrayList<>();
 
                 if (officerCell != null && officerCell.getCellType() == CellType.STRING && !officerCell.getStringCellValue().trim().isEmpty()) {
