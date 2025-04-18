@@ -60,6 +60,9 @@ public class Applicant extends User {
         System.out.println("Selling Price: " + price);
         System.out.println("Application Start Date: " + project.getOpenDate());
         System.out.println("Application Close Date: " + project.getCloseDate());
+        System.out.println("Officers: " + String.join(", ", project.getOfficers()));
+        System.out.println("Manager: " + project.getManager());
+        
         System.out.println("---------------------------");
     }
     
@@ -162,7 +165,23 @@ public class Applicant extends User {
     // @Override
     public void viewApplicationStatus() {
         if (this.appliedProject != null) {
-            System.out.println("Applied for " + this.appliedProject.getName() + " " + appliedType);
+            System.out.println("Applied for " + this.appliedProject.getName() + " " + this.appliedType);
+            System.out.println("Neighborhood: " + this.appliedProject.getNeighborhood());
+
+            if (this.appliedType.equals("type1")) {
+            System.out.println("Type1: " + this.appliedProject.getType1());
+            System.out.println("Available Units: " + this.appliedProject.getNoType1());
+            System.out.println("Selling Price: " + this.appliedProject.getPriceType1());}
+
+            else if (this.appliedType.equals("type2")) {
+            System.out.println("Type2: " + this.appliedProject.getType2());
+            System.out.println("Available Units: " + this.appliedProject.getNoType2());
+            System.out.println("Selling Price: " + this.appliedProject.getPriceType2());}
+
+            System.out.println("Application Start Date: " + this.appliedProject.getOpenDate());
+            System.out.println("Application Close Date: " + this.appliedProject.getCloseDate());
+            System.out.println("Officers: " + String.join(", ", this.appliedProject.getOfficers()));
+            System.out.println("Manager: " + this.appliedProject.getManager());
         }
         System.out.println("Application Status: " + this.applicationStatus);
     }
@@ -170,6 +189,14 @@ public class Applicant extends User {
     // @Override
     public void withdrawApplication() {
         if (this.appliedProject != null) {
+            if (this.applicationStatus.equals("Booked")) {
+                if (this.appliedType.equals("type1")) {
+                    this.appliedProject.setNoType1(this.appliedProject.getNoType1() + 1);
+                }
+                else if (this.appliedType.equals("type2")) {
+                    this.appliedProject.setNoType2(this.appliedProject.getNoType2() + 1);
+                }
+            }
             this.applicationStatus = "Unsuccessful";
             // this.appliedProject = null;
             // this.appliedType = "";

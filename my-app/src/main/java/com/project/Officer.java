@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.time.LocalDate;
 // import java.util.stream.Stream;
 import java.util.List;
+import java.util.ArrayList;
 public class Officer extends Applicant{
 
     List<Project> undertakenProjects;
@@ -26,6 +27,18 @@ public class Officer extends Applicant{
     public void viewUndertakenProjects() {
         for (int i=0; i < undertakenProjects.size(); i++) {
             System.out.println("[" + (i+1) + "] " + undertakenProjects.get(i).getName());
+            System.out.println("Neighborhood: " + undertakenProjects.get(i).getNeighborhood());
+            System.out.println("Type1: " + undertakenProjects.get(i).getType1());
+            System.out.println("Available Units: " + undertakenProjects.get(i).getNoType1());
+            System.out.println("Selling Price: " + undertakenProjects.get(i).getPriceType1());
+            System.out.println("Type2: " + undertakenProjects.get(i).getType2());
+            System.out.println("Available Units: " + undertakenProjects.get(i).getNoType2());
+            System.out.println("Selling Price: " + undertakenProjects.get(i).getPriceType2());
+            System.out.println("Application Start Date: " + undertakenProjects.get(i).getOpenDate());
+            System.out.println("Application Close Date: " + undertakenProjects.get(i).getCloseDate());
+            System.out.println("Officers: " + String.join(", ", undertakenProjects.get(i).getOfficers()));
+            System.out.println("Manager: " + undertakenProjects.get(i).getManager());
+            System.out.println("---------------------------");
         }
     }
     
@@ -119,6 +132,10 @@ public class Officer extends Applicant{
             }
 
             Project selected = projectList.get(idx);
+            if (selected.getOfficers().size() >= selected.getOfficerSlot()) {
+                System.out.println("Max number of officers for this project reached already");
+                return;
+            }
             // check if officer already in officers list
             boolean alreadyOfficer = selected.getOfficers().contains(this.name);
 
@@ -220,9 +237,6 @@ public class Officer extends Applicant{
             System.out.println("Officer functions");
             System.out.println("7. Show the undertaken projects");
             System.out.println("8. View and Reply Inquiries");
-
-
-
             System.out.println("9. Register for Project");
             System.out.println("10. View Registration Status");
             System.out.println("11. Book Flat for Applicant");
