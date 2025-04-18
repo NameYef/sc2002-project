@@ -3,11 +3,13 @@ package com.project;
 import java.time.LocalDateTime;
 public class Inquiry {
     private Applicant applicant;
+    private String projectName;
     private String message;
     private String reply;
     private LocalDateTime timestamp;
 
-    public Inquiry(Applicant applicant, String message) {
+    public Inquiry(Applicant applicant, String message, String projectName) {
+        this.projectName = projectName;
         this.applicant = applicant;
         this.message = message;
         this.reply = null;
@@ -17,6 +19,7 @@ public class Inquiry {
     public Applicant getApplicant() { return applicant; }
     public String getMessage() { return message; }
     public String getReply() { return reply; }
+    public String getProjectName() { return projectName; }
     public boolean isReplied() { return reply != null; }
     public void setReply(String reply) { this.reply = reply; }
     public void setMessage(String message) { this.message = message;}

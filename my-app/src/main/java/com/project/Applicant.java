@@ -37,9 +37,9 @@ public class Applicant extends User {
 
             // Uncomment below 3 lines if you want to also consider open dates and close dates
 
-            // if (today.isBefore(project.getOpenDate()) || today.isAfter(project.getCloseDate())) {
-            //     continue; // Skip projects that aren't open yet or already closed
-            // }
+            if (today.isBefore(project.getOpenDate()) || today.isAfter(project.getCloseDate())) {
+                continue; // Skip projects that aren't open yet or already closed
+            }
 
             boolean type1Eligible = isEligibleForFlatType(project.getType1());
             boolean type2Eligible = isEligibleForFlatType(project.getType2());
@@ -60,8 +60,8 @@ public class Applicant extends User {
         System.out.println("Selling Price: " + price);
         System.out.println("Application Start Date: " + project.getOpenDate());
         System.out.println("Application Close Date: " + project.getCloseDate());
-        System.out.println("Officers: " + String.join(", ", project.getOfficers()));
-        System.out.println("Manager: " + project.getManager());
+        // System.out.println("Officers: " + String.join(", ", project.getOfficersStr()));
+        System.out.println("Manager: " + project.getManager().getName());
         
         System.out.println("---------------------------");
     }
@@ -180,8 +180,8 @@ public class Applicant extends User {
 
             System.out.println("Application Start Date: " + this.appliedProject.getOpenDate());
             System.out.println("Application Close Date: " + this.appliedProject.getCloseDate());
-            System.out.println("Officers: " + String.join(", ", this.appliedProject.getOfficers()));
-            System.out.println("Manager: " + this.appliedProject.getManager());
+            // System.out.println("Officers: " + String.join(", ", this.appliedProject.getOfficers()));
+            System.out.println("Manager: " + this.appliedProject.getManager().getName());
         }
         System.out.println("Application Status: " + this.applicationStatus);
     }
@@ -227,7 +227,7 @@ public class Applicant extends User {
         System.out.print("Enter your inquiry: ");
         String message = scanner.nextLine();
     
-        Inquiry inquiry = new Inquiry(this, message);
+        Inquiry inquiry = new Inquiry(this, message, selectedProject.getName());
         selectedProject.addInquiry(inquiry);
     
         System.out.println("Inquiry submitted!");

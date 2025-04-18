@@ -19,6 +19,8 @@ public class Project implements IProject {
     private int officerSlot;
     private List<String> officersStr;
 
+    private Manager manager;
+    private List<Officer> officers;
 
     private boolean visibility;
     private List<Applicant> applicants;
@@ -53,27 +55,6 @@ public class Project implements IProject {
     @Override
     public boolean isVisible() {
         return visibility;
-    }
-
-    @Override
-    public boolean isEligible(Applicant applicant) {
-        if (applicant.getMaritalStatus().equals("Single") && applicant.getAge() >= 35) {
-            return type1.equals("2-Room") || type2.equals("2-Room");  // Single applicants 35+ can apply for 2-Room only
-        }
-        if (applicant.getMaritalStatus().equals("Married") && applicant.getAge() >= 21) {
-            return true;  // Married applicants can apply for any flat type
-        }
-        return false;
-    }
-
-    @Override
-    public void addApplication(Applicant applicant) {
-        if (isEligible(applicant)) {
-            applicants.add(applicant);
-            System.out.println("Applicant " + applicant.getNric() + " applied for " + name);
-        } else {
-            System.out.println("Applicant " + applicant.getNric() + " is not eligible for " + name);
-        }
     }
 
     public String getName() {
@@ -152,7 +133,7 @@ public class Project implements IProject {
         this.closeDate = closeDate;
     }
 
-    public String getManager() {
+    public String getManagerStr() {
         return managerStr;
     }
 
@@ -168,12 +149,29 @@ public class Project implements IProject {
         this.officerSlot = officerSlot;
     }
 
-    public List<String> getOfficers() {
+    public List<String> getOfficersStr() {
         return officersStr;
     }
 
-    public void setOfficers(List<String> officers) {
+    public void setOfficersStr(List<String> officers) {
         this.officersStr = officers;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    public Manager getManager() {
+        return manager;
+    }
+    public void setManager(Manager manager) {
+        this.manager = manager;
+    }
+
+    public List<Officer> getOfficers() {
+        return officers;
+    }
+    public void setOfficers(List<Officer> officers) {
+        this.officers = officers;
     }
 
     public void addApplicant(Applicant applicant) {

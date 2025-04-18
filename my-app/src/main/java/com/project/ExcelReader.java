@@ -39,6 +39,8 @@ public class ExcelReader {
                         .map(String::trim)
                         .collect(Collectors.toList());
 
+                
+
                 projects.add(new Project(name, neighborhood, type1, noType1, priceType1, type2, noType2, priceType2,
                         openDate, closeDate, manager, officerSlot, officers));
             }

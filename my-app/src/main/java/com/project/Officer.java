@@ -11,7 +11,7 @@ public class Officer extends Applicant{
     List<Project> undertakenProjects;
     private String registrationStatus = "Not Registered";
     private Project registeredProject = null;
-    public static List<String> pendingOfficer = new ArrayList<>();
+    public static List<Officer> pendingOfficer = new ArrayList<>();
 
     public Officer(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
@@ -36,7 +36,7 @@ public class Officer extends Applicant{
             System.out.println("Selling Price: " + undertakenProjects.get(i).getPriceType2());
             System.out.println("Application Start Date: " + undertakenProjects.get(i).getOpenDate());
             System.out.println("Application Close Date: " + undertakenProjects.get(i).getCloseDate());
-            System.out.println("Officers: " + String.join(", ", undertakenProjects.get(i).getOfficers()));
+            // System.out.println("Officers: " + String.join(", ", undertakenProjects.get(i).getOfficers()));
             System.out.println("Manager: " + undertakenProjects.get(i).getManager());
             System.out.println("---------------------------");
         }
@@ -51,12 +51,12 @@ public class Officer extends Applicant{
             if (!project.isVisible()) continue;
 
             // Skip if this officer is already handling the project
-            if (project.getOfficers().contains(this.name)) {
+            if (project.getOfficersStr().contains(this.nric)) {
                 System.out.println("SKipping");
                 continue;}
 
             // Optionally check open/close dates
-            // if (today.isBefore(project.getOpenDate()) || today.isAfter(project.getCloseDate())) continue;
+            if (today.isBefore(project.getOpenDate()) || today.isAfter(project.getCloseDate())) continue;
 
             boolean type1Eligible = isEligibleForFlatType(project.getType1());
             boolean type2Eligible = isEligibleForFlatType(project.getType2());
@@ -118,7 +118,7 @@ public class Officer extends Applicant{
         System.out.println("\n--- Register as HDB Officer ---");
         for (int i = 0; i < projectList.size(); i++) {
             Project p = projectList.get(i);
-            if (!p.getOfficers().contains(this.name)) {
+            if (!p.getOfficersStr().contains(this.nric)) {
                 System.out.println("[" + (i + 1) + "] " + p.getName());
             }
         }
@@ -137,7 +137,7 @@ public class Officer extends Applicant{
                 return;
             }
             // check if officer already in officers list
-            boolean alreadyOfficer = selected.getOfficers().contains(this.name);
+            boolean alreadyOfficer = selected.getOfficersStr().contains(this.nric);
 
             // check if officer already applied as applicant
             boolean alreadyApplicant = false;
@@ -154,7 +154,7 @@ public class Officer extends Applicant{
             }
             else{
                 registeredProject = selected;
-                pendingOfficer.add(getName());
+                pendingOfficer.add(this);
                 registrationStatus = "Pending";
                 System.out.println("Registration submitted. Awaiting manager approval.");
             }
@@ -223,7 +223,7 @@ public class Officer extends Applicant{
     @Override
     public String showInterface(Scanner scanner, List<Project> projectList) {
         this.fillElligibleProjects(projectList);
-        this.undertakenProjects = projectList.stream().filter(obj->obj.getOfficers().contains(this.name)).collect(Collectors.toList());
+        this.undertakenProjects = projectList.stream().filter(obj->obj.getOfficersStr().contains(this.nric)).collect(Collectors.toList());
         while (true) {
             System.out.println("Officer Menu:");
             System.out.println("Applicant functions");
