@@ -18,15 +18,15 @@ public class Project implements IProject {
     private String managerStr;
     private int officerSlot;
     private List<String> officersStr;
+    private List<String> applicantsStr;
 
     private Manager manager;
     private List<Officer> officers;
-
     private boolean visibility;
     private List<Applicant> applicants;
     private List<Inquiry> inquiries = new ArrayList<>();
 
-    public Project(String name, String neighborhood, String type1, int noType1, double priceType1, String type2, int noType2, double priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr, boolean visibility) {
+    public Project(String name, String neighborhood, String type1, int noType1, double priceType1, String type2, int noType2, double priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr, boolean visibility, List<String> applicantsStr) {
         this.name = name;
         this.neighborhood = neighborhood;
         this.type1 = type1;
@@ -40,7 +40,7 @@ public class Project implements IProject {
         this.managerStr = managerStr;
         this.officerSlot = officerSlot;
         this.officersStr = officersStr;
-
+        this.applicantsStr = applicantsStr;
 
         this.visibility = visibility;  
         this.applicants = new ArrayList<>(); // Fixed: Properly initialized
@@ -174,6 +174,18 @@ public class Project implements IProject {
         this.officers = officers;
     }
 
+    public List<String> getApplicantsStr() {
+        return applicantsStr;
+    }
+
+    public void addApplicantStr(String applicantNric) {
+        applicantsStr.add(applicantNric);
+    }
+
+    public void setApplicants(List<Applicant> applicants) {
+        this.applicants = applicants;
+    }
+
     public void addApplicant(Applicant applicant) {
         applicants.add(applicant);
     }
@@ -191,8 +203,12 @@ public class Project implements IProject {
         return inquiries;
     }
     
+    public void setInquiries(List<Inquiry> inquiries) {
+        this.inquiries = inquiries;
+    }
     public List<Applicant> getApplicants() {
         return applicants;
     }
+
     
 }

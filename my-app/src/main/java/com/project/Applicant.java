@@ -141,9 +141,10 @@ public class Applicant extends User {
                     System.out.println("Invalid choice.");
                     this.appliedProject = null;
                 } else {
-                    appliedType = "type1";
-                    applicationStatus = "Pending";
+                    this.appliedType = "type1";
+                    this.applicationStatus = "Pending";
                     this.appliedProject.addApplicant(this);
+                    this.appliedProject.addApplicantStr(this.nric);
                     System.out.println("Successfully applied for " + this.appliedProject.getName() + " (" + this.appliedProject.getType1() + ")");
                 }
                 break;
@@ -153,9 +154,10 @@ public class Applicant extends User {
                     System.out.println("Invalid choice.");
                     this.appliedProject = null;
                 } else {
-                    appliedType = "type2";
-                    applicationStatus = "Pending";
+                    this.appliedType = "type2";
+                    this.applicationStatus = "Pending";
                     this.appliedProject.addApplicant(this);
+                    this.appliedProject.addApplicantStr(this.nric);
                     System.out.println("Successfully applied for " + this.appliedProject.getName() + " (" + this.appliedProject.getType2() + ")");
                 }
                 break;
@@ -397,7 +399,7 @@ public class Applicant extends User {
             System.out.println("3. Apply For a Project");
             System.out.println("4. View Applied Project"); 
             System.out.println("5. Request for withdrawal");
-            System.out.println("6. Enquiries");
+            System.out.println("6. Inquiries");
             System.out.println("7. Reset Password");
             System.out.println("8. Logout");
             System.out.println("9. Quit");

@@ -1,19 +1,31 @@
 package com.project;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 public class Inquiry {
     private Applicant applicant;
     private String projectName;
     private String message;
     private String reply;
-    private LocalDateTime timestamp;
+    private LocalDate timestamp;
 
     public Inquiry(Applicant applicant, String message, String projectName) {
         this.projectName = projectName;
         this.applicant = applicant;
         this.message = message;
         this.reply = null;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDate.now();
+
+    }
+
+    // for excel reading
+    public Inquiry(Applicant applicant, String message, String projectName, String reply, LocalDate timestamp) {
+        this.projectName = projectName;
+        this.applicant = applicant;
+        this.message = message;
+        this.reply = reply;
+        this.timestamp = timestamp;
+
     }
 
     public Applicant getApplicant() { return applicant; }
@@ -23,6 +35,7 @@ public class Inquiry {
     public boolean isReplied() { return reply != null; }
     public void setReply(String reply) { this.reply = reply; }
     public void setMessage(String message) { this.message = message;}
+    public LocalDate getTimestamp() { return this.timestamp; }
     public String toString() {
         return "From: " + applicant.getName() +
                "\nMessage: " + message +
