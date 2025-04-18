@@ -52,6 +52,11 @@ public class MainApplication {
             }
 
             System.out.println("Terminating...");
+
+            inquiryList.clear();
+            for (Project project : projectList) {
+                inquiryList.addAll(project.getInquiries());
+            }
             reader.writeApplicants("./data/ApplicantList.xlsx", applicantList);
             reader.writeManagers("./data/ManagerList.xlsx", managerList);
             reader.writeOfficers("./data/OfficerList.xlsx", officerList);

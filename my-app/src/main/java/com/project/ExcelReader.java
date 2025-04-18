@@ -69,6 +69,9 @@ public class ExcelReader {
 
     public void writeProjects(String filePath, List<Project> projects) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
+            CellStyle dateCellStyle = workbook.createCellStyle();
+            CreationHelper createHelper = workbook.getCreationHelper();
+            dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd/mm/yyyy"));
             Sheet sheet = workbook.createSheet();
             Row header = sheet.createRow(0);
             String[] headers = {"Name", "Neighborhood", "Type1", "NoType1", "PriceType1", "Type2", "NoType2", "PriceType2", "OpenDate", "CloseDate", "Manager", "OfficerSlot", "Officers", "Visibility", "Applicants"};
@@ -85,8 +88,13 @@ public class ExcelReader {
                 row.createCell(5).setCellValue(p.getType2());
                 row.createCell(6).setCellValue(p.getNoType2());
                 row.createCell(7).setCellValue(p.getPriceType2());
-                row.createCell(8).setCellValue(java.sql.Date.valueOf(p.getOpenDate()));
-                row.createCell(9).setCellValue(java.sql.Date.valueOf(p.getCloseDate()));
+                Cell cell = row.createCell(8);
+                cell.setCellValue(java.sql.Date.valueOf(p.getOpenDate()));
+                cell.setCellStyle(dateCellStyle);
+                cell = row.createCell(9);
+                cell.setCellValue(java.sql.Date.valueOf(p.getCloseDate()));
+                cell.setCellStyle(dateCellStyle); 
+
                 row.createCell(10).setCellValue(p.getManager().getNric());
                 row.createCell(11).setCellValue(p.getOfficerSlot());
                 row.createCell(12).setCellValue(String.join(",", p.getOfficersStr()));
@@ -164,6 +172,9 @@ public class ExcelReader {
 
     public void writeInquiries(String filePath, List<Inquiry> inquiries) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
+            CellStyle dateCellStyle = workbook.createCellStyle();
+            CreationHelper createHelper = workbook.getCreationHelper();
+            dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd/mm/yyyy"));
             Sheet sheet = workbook.createSheet();
             Row header = sheet.createRow(0);
             String[] headers = {"ApplicantNRIC", "Message", "ProjectName", "Reply", "Timestamp"};
@@ -176,7 +187,9 @@ public class ExcelReader {
                 row.createCell(1).setCellValue(inq.getMessage());
                 row.createCell(2).setCellValue(inq.getProjectName());
                 row.createCell(3).setCellValue(inq.getReply());
-                row.createCell(4).setCellValue(java.sql.Date.valueOf(inq.getTimestamp()));
+                Cell cell = row.createCell(4);
+                cell.setCellValue(java.sql.Date.valueOf(inq.getTimestamp()));
+                cell.setCellStyle(dateCellStyle);
             }
 
             try (FileOutputStream fos = new FileOutputStream(filePath)) {
