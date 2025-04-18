@@ -64,10 +64,10 @@ public class Manager extends User{
     	}
     	
     	
-    	Project newProj = new Project(name,neighbourhood,type1,notype1,pricetype1,type2,notype2,pricetype2,
-    			openDate,closeDate,manager,officerSlot,officersString);
+    	// Project newProj = new Project(name,neighbourhood,type1,notype1,pricetype1,type2,notype2,pricetype2,
+    	// 		openDate,closeDate,manager,officerSlot,officersString);
     	
-    	projectList.add(newProj);
+    	// projectList.add(newProj);
     }
     
     //to delete entry

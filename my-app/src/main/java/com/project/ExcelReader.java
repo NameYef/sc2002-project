@@ -24,10 +24,10 @@ public class ExcelReader {
                 String neighborhood = row.getCell(1).getStringCellValue();
                 String type1 = row.getCell(2).getStringCellValue();
                 int noType1 = (int) row.getCell(3).getNumericCellValue();
-                int priceType1 = (int) row.getCell(4).getNumericCellValue();
+                double priceType1 = (int) row.getCell(4).getNumericCellValue();
                 String type2 = row.getCell(5).getStringCellValue();
                 int noType2 = (int) row.getCell(6).getNumericCellValue();
-                int priceType2 = (int) row.getCell(7).getNumericCellValue();
+                double priceType2 = (int) row.getCell(7).getNumericCellValue();
 
                 LocalDate openDate = toLocalDate(row.getCell(8).getDateCellValue());
                 LocalDate closeDate = toLocalDate(row.getCell(9).getDateCellValue());

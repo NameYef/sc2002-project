@@ -9,10 +9,10 @@ public class Project implements IProject {
     private String neighborhood;
     private String type1;
     private int noType1;
-    private int priceType1;
+    private double priceType1;
     private String type2;
     private int noType2;
-    private int priceType2;
+    private double priceType2;
     private LocalDate openDate;
     private LocalDate closeDate;
     private String managerStr;
@@ -26,7 +26,7 @@ public class Project implements IProject {
     private List<Applicant> applicants;
     private List<Inquiry> inquiries = new ArrayList<>();
 
-    public Project(String name, String neighborhood, String type1, int noType1, int priceType1, String type2, int noType2, int priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr, boolean visibility) {
+    public Project(String name, String neighborhood, String type1, int noType1, double priceType1, String type2, int noType2, double priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr, boolean visibility) {
         this.name = name;
         this.neighborhood = neighborhood;
         this.type1 = type1;
@@ -85,7 +85,7 @@ public class Project implements IProject {
         this.noType1 = noType1;
     }
 
-    public int getPriceType1() {
+    public double getPriceType1() {
         return priceType1;
     }
 
@@ -109,7 +109,7 @@ public class Project implements IProject {
         this.noType2 = noType2;
     }
 
-    public int getPriceType2() {
+    public double getPriceType2() {
         return priceType2;
     }
 
