@@ -110,7 +110,7 @@ public class Applicant extends User {
 
     // @Override
     public void applyForProject(Scanner scanner) {
-        if (this.appliedProject != null || !this.applicationStatus.equals("Unsuccessful")) {
+        if (!this.applicationStatus.equals("Unsuccessful")) {
             System.out.println("You have already applied for a project.");
             return;
         }

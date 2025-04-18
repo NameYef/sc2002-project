@@ -36,8 +36,12 @@ public class Officer extends Applicant{
             System.out.println("Selling Price: " + undertakenProjects.get(i).getPriceType2());
             System.out.println("Application Start Date: " + undertakenProjects.get(i).getOpenDate());
             System.out.println("Application Close Date: " + undertakenProjects.get(i).getCloseDate());
-            // System.out.println("Officers: " + String.join(", ", undertakenProjects.get(i).getOfficers()));
-            System.out.println("Manager: " + undertakenProjects.get(i).getManager());
+            System.out.println("Officers: " + 
+                undertakenProjects.get(i).getOfficers().stream()
+                    .map(Officer::getName) // extract the name
+                    .collect(Collectors.joining(", "))
+            );
+            System.out.println("Manager: " + undertakenProjects.get(i).getManager().getName());
             System.out.println("---------------------------");
         }
     }
@@ -52,7 +56,7 @@ public class Officer extends Applicant{
 
             // Skip if this officer is already handling the project
             if (project.getOfficersStr().contains(this.nric)) {
-                System.out.println("SKipping");
+                // System.out.println("SKipping");
                 continue;}
 
             // Optionally check open/close dates
