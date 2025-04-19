@@ -9,8 +9,8 @@ public class Applicant extends User {
 
     protected String applicationStatus;
     protected String flatTypeBooked; // type1 or type2, set by Officer
-    protected Project appliedProject;
     protected String appliedType; // stored this just in case, value can only be type1 or type2
+    protected Project appliedProject;
     protected List<Project> elligibleProjects;
 
     public Applicant(String name, String nric, int age, String maritalStatus, String password) {

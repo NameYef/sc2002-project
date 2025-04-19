@@ -132,6 +132,63 @@ public class ExcelReader {
         writeUsers(filePath, officers);
     }
 
+    
+    private <T extends User> List<T> readUsers(String filePath, UserFactory<T> factory) throws IOException {
+        List<T> users = new ArrayList<>();
+        try (Workbook workbook = new XSSFWorkbook(new FileInputStream(filePath))) {
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0 || row == null) continue;
+
+                boolean isRowEmpty = true;
+                for (Cell cell : row) {
+                    if (cell != null && cell.getCellType() != CellType.BLANK) {
+                        isRowEmpty = false;
+                        break;
+                    }
+                }
+                if (isRowEmpty) continue;
+                String name = row.getCell(0).getStringCellValue();
+                String nric = row.getCell(1).getStringCellValue();
+                int age = (int) row.getCell(2).getNumericCellValue();
+                String maritalStatus = row.getCell(3).getStringCellValue();
+                String password = row.getCell(4).getStringCellValue();
+
+                users.add(factory.create(name, nric, age, maritalStatus, password));
+            }
+        }
+        return users;
+    }
+
+    private <T extends User> void writeUsers(String filePath, List<T> users) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet();
+            Row header = sheet.createRow(0);
+            String[] headers = {"Name", "NRIC", "Age", "MaritalStatus", "Password"};
+            for (int i = 0; i < headers.length; i++) header.createCell(i).setCellValue(headers[i]);
+
+            int rowIndex = 1;
+            for (T user : users) {
+                Row row = sheet.createRow(rowIndex++);
+                row.createCell(0).setCellValue(user.getName());
+                row.createCell(1).setCellValue(user.getNric());
+                row.createCell(2).setCellValue(user.getAge());
+                row.createCell(3).setCellValue(user.getMaritalStatus());
+                row.createCell(4).setCellValue(user.getPassword());
+            }
+
+            try (FileOutputStream fos = new FileOutputStream(filePath)) {
+                workbook.write(fos);
+            }
+        }
+    }
+
+    
+    @FunctionalInterface
+    private interface UserFactory<T extends User> {
+        T create(String name, String nric, int age, String maritalStatus, String password);
+    }
+    
     public List<Inquiry> readInquiries(String filePath, List<Applicant> applicants) throws IOException {
         List<Inquiry> inquiries = new ArrayList<>();
         Map<String, Applicant> nricMap = applicants.stream().collect(Collectors.toMap(Applicant::getNric, a -> a));
@@ -197,64 +254,8 @@ public class ExcelReader {
             }
         }
     }
-
-    private <T extends User> List<T> readUsers(String filePath, UserFactory<T> factory) throws IOException {
-        List<T> users = new ArrayList<>();
-        try (Workbook workbook = new XSSFWorkbook(new FileInputStream(filePath))) {
-            Sheet sheet = workbook.getSheetAt(0);
-            for (Row row : sheet) {
-                if (row.getRowNum() == 0 || row == null) continue;
-
-                boolean isRowEmpty = true;
-                for (Cell cell : row) {
-                    if (cell != null && cell.getCellType() != CellType.BLANK) {
-                        isRowEmpty = false;
-                        break;
-                    }
-                }
-                if (isRowEmpty) continue;
-                String name = row.getCell(0).getStringCellValue();
-                String nric = row.getCell(1).getStringCellValue();
-                int age = (int) row.getCell(2).getNumericCellValue();
-                String maritalStatus = row.getCell(3).getStringCellValue();
-                String password = row.getCell(4).getStringCellValue();
-
-                users.add(factory.create(name, nric, age, maritalStatus, password));
-            }
-        }
-        return users;
-    }
-
-    private <T extends User> void writeUsers(String filePath, List<T> users) throws IOException {
-        try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet();
-            Row header = sheet.createRow(0);
-            String[] headers = {"Name", "NRIC", "Age", "MaritalStatus", "Password"};
-            for (int i = 0; i < headers.length; i++) header.createCell(i).setCellValue(headers[i]);
-
-            int rowIndex = 1;
-            for (T user : users) {
-                Row row = sheet.createRow(rowIndex++);
-                row.createCell(0).setCellValue(user.getName());
-                row.createCell(1).setCellValue(user.getNric());
-                row.createCell(2).setCellValue(user.getAge());
-                row.createCell(3).setCellValue(user.getMaritalStatus());
-                row.createCell(4).setCellValue(user.getPassword());
-            }
-
-            try (FileOutputStream fos = new FileOutputStream(filePath)) {
-                workbook.write(fos);
-            }
-        }
-    }
-
     private LocalDate toLocalDate(Date date) {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-
-    @FunctionalInterface
-    private interface UserFactory<T extends User> {
-        T create(String name, String nric, int age, String maritalStatus, String password);
     }
 
     public void resolveProjectReferences(List<Project> projects,
