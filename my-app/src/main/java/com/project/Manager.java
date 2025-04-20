@@ -396,7 +396,7 @@ public class Manager extends User {
 	    List<Officer> pendingOfficers = new ArrayList<>();
 
 		for (Officer officer : Officer.getPendingOfficers()) {
-			if (officer.getRegistrationStatus().equals("Pending")) {
+			if (officer.getRegistrationStatus().equals("Pending") && selectedProject.getName().equals(officer.getRegisteredProject().getName())) {
 				pendingOfficers.add(officer);
 			}
 		}

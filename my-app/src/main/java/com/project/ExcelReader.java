@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.function.Function;
 
 
 public class ExcelReader {
@@ -254,6 +255,171 @@ public class ExcelReader {
             }
         }
     }
+
+    public void readApplicantStatusList(String filename, List<Applicant> applicantList, List<Project> projectList) throws IOException {
+        FileInputStream fis = new FileInputStream(filename);
+        Workbook workbook = new XSSFWorkbook(fis);
+        Sheet sheet = workbook.getSheetAt(0);
+    
+        Map<String, Applicant> applicantMap = applicantList.stream()
+            .collect(Collectors.toMap(Applicant::getNric, Function.identity()));
+        Map<String, Project> projectMap = projectList.stream()
+            .collect(Collectors.toMap(Project::getName, Function.identity()));
+    
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null || row.getCell(0) == null) continue;
+    
+            String nric = getCellString(row, 0, "");
+            Applicant applicant = applicantMap.get(nric);
+            if (applicant == null) continue;
+    
+            String appStatus = getCellString(row, 1, "Unsuccessful");
+            boolean withdrawStatus = getCellBoolean(row, 2, false);
+            String appliedType = getCellString(row, 3, "");
+            String appliedFlatType = getCellString(row, 4, "");
+            String flatTypeBooked = getCellString(row, 5, "");
+            String appliedProjectStr = getCellString(row, 6, "");
+    
+            Project appliedProject = projectMap.getOrDefault(appliedProjectStr, null);
+    
+            applicant.setApplicationStatus(appStatus);
+            applicant.setWithdrawStatus(withdrawStatus);
+            applicant.setAppliedType(appliedType);
+            applicant.setAppliedFlatType(appliedFlatType);
+            applicant.setFlatTypeBooked(flatTypeBooked);
+            applicant.setAppliedProject(appliedProject);
+        }
+    
+        workbook.close();
+        fis.close();
+    }
+
+    public void writeApplicantStatusList(String filename, List<Applicant> applicantList) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Applicants");
+    
+        String[] headers = {
+            "NRIC", "ApplicationStatus", "WithdrawStatus", "AppliedType",
+            "AppliedFlatType", "FlatTypeBooked", "AppliedProject"
+        };
+    
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            headerRow.createCell(i).setCellValue(headers[i]);
+        }
+    
+        int rowNum = 1;
+        for (Applicant a : applicantList) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(a.getNric());
+            row.createCell(1).setCellValue(a.getApplicationStatus());
+            row.createCell(2).setCellValue(a.getWithdrawStatus());
+            row.createCell(3).setCellValue(a.getAppliedType());
+            row.createCell(4).setCellValue(a.getAppliedFlatType());
+            row.createCell(5).setCellValue(a.getFlatTypeBooked());
+            row.createCell(6).setCellValue(a.getAppliedProject() != null ? a.getAppliedProject().getName() : "");
+        }
+    
+        FileOutputStream fos = new FileOutputStream(filename);
+        workbook.write(fos);
+        workbook.close();
+        fos.close();
+    }
+    
+    public void readOfficerStatusList(String filename, List<Officer> officerList, List<Project> projectList) throws IOException {
+        FileInputStream fis = new FileInputStream(filename);
+        Workbook workbook = new XSSFWorkbook(fis);
+        Sheet sheet = workbook.getSheetAt(0);
+    
+        Map<String, Officer> officerMap = officerList.stream()
+            .collect(Collectors.toMap(Officer::getNric, Function.identity()));
+        Map<String, Project> projectMap = projectList.stream()
+            .collect(Collectors.toMap(Project::getName, Function.identity()));
+    
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null || row.getCell(0) == null) continue;
+    
+            String nric = getCellString(row, 0, "");
+            Officer officer = officerMap.get(nric);
+            if (officer == null) continue;
+    
+            String appStatus = getCellString(row, 1, "Unsuccessful");
+            boolean withdrawStatus = getCellBoolean(row, 2, false);
+            String appliedType = getCellString(row, 3, "");
+            String appliedFlatType = getCellString(row, 4, "");
+            String flatTypeBooked = getCellString(row, 5, "");
+            String appliedProjectStr = getCellString(row, 6, "");
+            String registrationStatus = getCellString(row, 7, "Not Registered");
+            String registeredProjectStr = getCellString(row, 8, "");
+    
+            Project appliedProject = projectMap.getOrDefault(appliedProjectStr, null);
+            Project registeredProject = projectMap.getOrDefault(registeredProjectStr, null);
+            if (registrationStatus.equalsIgnoreCase("Pending")) {Officer.getPendingOfficers().add(officer);}
+            officer.setApplicationStatus(appStatus);
+            officer.setWithdrawStatus(withdrawStatus);
+            officer.setAppliedType(appliedType);
+            officer.setAppliedFlatType(appliedFlatType);
+            officer.setFlatTypeBooked(flatTypeBooked);
+            officer.setAppliedProject(appliedProject);
+            officer.setRegistrationStatus(registrationStatus);
+            officer.setRegisteredProject(registeredProject);
+        }
+    
+        workbook.close();
+        fis.close();
+    }
+    
+    public void writeOfficerStatusList(String filename, List<Officer> officerList) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Officers");
+    
+        String[] headers = {
+            "NRIC", "ApplicationStatus", "WithdrawStatus", "AppliedType",
+            "AppliedFlatType", "FlatTypeBooked", "AppliedProject",
+            "RegistrationStatus", "RegisteredProject"
+        };
+    
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            headerRow.createCell(i).setCellValue(headers[i]);
+        }
+    
+        int rowNum = 1;
+        for (Officer o : officerList) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(o.getNric());
+            row.createCell(1).setCellValue(o.getApplicationStatus());
+            row.createCell(2).setCellValue(o.getWithdrawStatus());
+            row.createCell(3).setCellValue(o.getAppliedType());
+            row.createCell(4).setCellValue(o.getAppliedFlatType());
+            row.createCell(5).setCellValue(o.getFlatTypeBooked());
+            row.createCell(6).setCellValue(o.getAppliedProject() != null ? o.getAppliedProject().getName() : "");
+            row.createCell(7).setCellValue(o.getRegistrationStatus());
+            row.createCell(8).setCellValue(o.getRegisteredProject() != null ? o.getRegisteredProject().getName() : "");
+        }
+    
+        FileOutputStream fos = new FileOutputStream(filename);
+        workbook.write(fos);
+        workbook.close();
+        fos.close();
+    }
+
+    private static String getCellString(Row row, int index, String defaultValue) {
+        Cell cell = row.getCell(index);
+        return (cell == null || cell.getCellType() == CellType.BLANK) ? defaultValue : cell.getStringCellValue();
+    }
+    
+    private static boolean getCellBoolean(Row row, int index, boolean defaultValue) {
+        Cell cell = row.getCell(index);
+        if (cell == null || cell.getCellType() == CellType.BLANK) return defaultValue;
+        if (cell.getCellType() == CellType.BOOLEAN) return cell.getBooleanCellValue();
+        if (cell.getCellType() == CellType.STRING) return Boolean.parseBoolean(cell.getStringCellValue());
+        if (cell.getCellType() == CellType.NUMERIC) return cell.getNumericCellValue() != 0;
+        return defaultValue;
+    }
+    
     private LocalDate toLocalDate(Date date) {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }

@@ -17,8 +17,10 @@ public class MainApplication {
             List<Manager> managerList = reader.readManagers("./data/ManagerList.xlsx");
             List<Officer> officerList = reader.readOfficers("./data/OfficerList.xlsx");
             List<Inquiry> inquiryList = reader.readInquiries("./data/InquiryList.xlsx", applicantList);
-            
-            
+            reader.readApplicantStatusList("./data/ApplicantStatusList.xlsx", applicantList, projectList);
+            reader.readOfficerStatusList("./data/OfficerStatusList.xlsx", officerList, projectList);
+
+
             reader.resolveProjectReferences(projectList, managerList, officerList, applicantList, inquiryList);
             
             // Combine all users for login
@@ -61,7 +63,8 @@ public class MainApplication {
             reader.writeOfficers("./data/OfficerList.xlsx", officerList);
             reader.writeProjects("./data/ProjectList.xlsx", projectList);
             reader.writeInquiries("./data/InquiryList.xlsx", inquiryList);
-
+            reader.writeApplicantStatusList("./data/ApplicantStatusList.xlsx", applicantList);
+            reader.writeOfficerStatusList("./data/OfficerStatusList.xlsx", officerList);
         } catch (IOException e) {
             System.out.println("Error reading Excel files: " + e.getMessage());
             e.printStackTrace();

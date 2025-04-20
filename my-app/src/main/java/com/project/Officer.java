@@ -23,6 +23,13 @@ public class Officer extends Applicant{
         return "Officer";
     }
 
+    public Project getRegisteredProject() {
+        return this.registeredProject;
+    }
+    public void setRegisteredProject(Project registeredProject) {
+        this.registeredProject = registeredProject;
+    }
+
     public String getRegistrationStatus() {
         return this.registrationStatus;
     }
@@ -34,7 +41,13 @@ public class Officer extends Applicant{
         return pendingOfficer;
     }
 
-
+    private List<Applicant> findAllApplicants(List<Project> projects) {
+        List<Applicant> result = new java.util.ArrayList<>();
+        for (Project p : projects) {
+            result.addAll(p.getApplicants());
+        }
+        return result;
+    }
     public void viewUndertakenProjects() {
         for (int i=0; i < undertakenProjects.size(); i++) {
             System.out.println("[" + (i+1) + "] " + undertakenProjects.get(i).getName());
@@ -59,7 +72,12 @@ public class Officer extends Applicant{
     
     @Override
     public void fillElligibleProjects(List<Project> projectList) {
+
         elligibleProjects.clear(); 
+        if (this.registrationStatus.equals("Pending") || this.registrationStatus.equals("Approved")) {
+            return;
+        }
+        
         LocalDate today = LocalDate.now();
 
         for (Project project : projectList) {
@@ -274,6 +292,7 @@ public class Officer extends Applicant{
             String input = scanner.nextLine();
             switch (input) {
                 case "1":
+                    fillElligibleProjects(projectList);
                     viewProjects();
                     break;
                 case "2":
@@ -304,7 +323,7 @@ public class Officer extends Applicant{
                     viewRegistrationStatus(); 
                     break;
                 case "11":
-                    bookFlat(scanner, findAllApplicants(projectList));
+                    bookFlat(scanner, findAllApplicants(undertakenProjects));
                     break;
                 case "12":
                     return resetPassword(scanner);
@@ -321,13 +340,7 @@ public class Officer extends Applicant{
         
         
     }
-    private List<Applicant> findAllApplicants(List<Project> projects) {
-        List<Applicant> result = new java.util.ArrayList<>();
-        for (Project p : projects) {
-            result.addAll(p.getApplicants());
-        }
-        return result;
-    }
+
 }
 
 

@@ -15,13 +15,13 @@ public class Applicant extends User {
     protected String appliedFlatType;
 
     
+    
     protected Project appliedProject;
     protected List<Project> elligibleProjects;
-
+    
     
     public Applicant(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
-        this.applicationStatus = "Unsuccessful";
         this.elligibleProjects = new ArrayList<>();
     }
     public Project getAppliedProject() { return this.appliedProject; }
@@ -29,13 +29,11 @@ public class Applicant extends User {
     public String getApplicationStatus() { return applicationStatus; }
     public String getPassword() { return password; }
     public String getAppliedFlatType() { return appliedFlatType; }
-    public boolean getWithdrawStatus() {
-        return withdrawStatus;
-    }
-
-    public void setWithdrawStatus(boolean withdrawStatus) {
-        this.withdrawStatus = withdrawStatus;
-    }
+    public boolean getWithdrawStatus() { return withdrawStatus; }
+    
+    public String getFlatTypeBooked() { return flatTypeBooked; }
+    public void setFlatTypeBooked(String flatTypeBooked) { this.flatTypeBooked = flatTypeBooked; }
+    public void setWithdrawStatus(boolean withdrawStatus) { this.withdrawStatus = withdrawStatus; }
     public void setAppliedFlatType(String appliedFlatType) { this.appliedFlatType = appliedFlatType; }
     public void setApplicationStatus(String status) { this.applicationStatus = status; }
     public void setAppliedProject(Project project) { this.appliedProject = project; }
