@@ -154,8 +154,8 @@ public class Officer extends Applicant{
     
     public void registerAsOfficer(Scanner scanner, List<Project> projectList) {
         UIHelper.printSubHeader("Register as HDB Officer");
-        if (this.registrationStatus.equals("Registered") || this.registrationStatus.equals("Approved")) {
-            System.out.println("You have registration pending / already registered");
+        if (this.registrationStatus.equals("Pending")) {
+            System.out.println("You have registration pending");
             return;
         }
         for (int i = 0; i < projectList.size(); i++) {
@@ -311,9 +311,11 @@ public class Officer extends Applicant{
                     showInquiryInterface(scanner, projectList);
                     break;
                 case "7":
+                    this.undertakenProjects = projectList.stream().filter(obj->obj.getOfficersStr().contains(this.nric)).collect(Collectors.toList());
                     viewUndertakenProjects();
                     break;
                 case "8":
+                    this.undertakenProjects = projectList.stream().filter(obj->obj.getOfficersStr().contains(this.nric)).collect(Collectors.toList());
                     replyToInquiries(scanner);
                     break;
                 case "9":
