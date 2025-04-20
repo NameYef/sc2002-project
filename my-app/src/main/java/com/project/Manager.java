@@ -415,11 +415,11 @@ public class Manager extends User {
 	        UIHelper.printField("Age", String.valueOf(officer.getAge()));
 	        UIHelper.printDivider();
 	    }
-	    
-	    UIHelper.printField("\nInitial available slots: ",String.valueOf(selectedProject.getOfficerSlot()));
+	    int availableSlots = selectedProject.getOfficerSlot() - selectedProject.getOfficers().size();
+	    UIHelper.printField("\nAvailable slots: ",String.valueOf(availableSlots));
 
 	    while (true) {
-	        if (selectedProject.getOfficerSlot() <= 0) {
+	        if (availableSlots <= 0) {
 	            System.out.println("No more officer slots available.");
 	            break;
 	        }
@@ -450,12 +450,12 @@ public class Manager extends User {
 	            	selectedProject.addOfficersStr(targetOfficer.getNric());
 					selectedProject.addOfficers(targetOfficer);
 	                Officer.getPendingOfficers().remove(targetOfficer);
-	                selectedProject.setOfficerSlot(selectedProject.getOfficerSlot() - 1);
+	                availableSlots -= 1;
 					targetOfficer.setRegistrationStatus("Approved");
 					
 
 	                System.out.println("Officer " + targetOfficer.getName() + " approved and added to project.");
-	                System.out.println("Remaining slots: " + selectedProject.getOfficerSlot());
+	                System.out.println("Remaining slots: " + availableSlots);
 	                break;
 
 	            case "R":
@@ -542,13 +542,13 @@ public class Manager extends User {
 	                        System.out.println("No 2-Room units left. Cannot approve any more Applicants.");
 	                        break;
 	                    }
-	                    selectedProject.setNoType1(selectedProject.getNoType1() - 1);
+	                    // selectedProject.setNoType1(selectedProject.getNoType1() - 1);
 	                } else if (type.equalsIgnoreCase("3-Room")) {
 	                    if (selectedProject.getNoType2() <= 0) {
 	                        System.out.println("No 3-Room units left. Cannot approve any more Applicants.");
 	                        break;
 	                    }
-	                    selectedProject.setNoType2(selectedProject.getNoType2() - 1);
+	                    // selectedProject.setNoType2(selectedProject.getNoType2() - 1);
 	                } else {
 	                    System.out.println("Unknown flat type.");
 	                    break;
@@ -727,7 +727,7 @@ public class Manager extends User {
         		
         		
         		String type = targetapp.getAppliedType();
-        	    if (type != null) {
+        	    if (type != null && targetapp.getApplicationStatus().equals("Booked")) {
         	        if (type.equalsIgnoreCase("2-Room")) {
         	            targetapp.getAppliedProject().setNoType1(
         	                targetapp.getAppliedProject().getNoType1() + 1
