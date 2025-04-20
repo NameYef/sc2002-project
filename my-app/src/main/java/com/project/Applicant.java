@@ -1,9 +1,7 @@
 package com.project;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -420,7 +418,7 @@ public class Applicant extends User {
     // @Override
     public String showInterface(Scanner scanner, List<Project> projectList) {
 
-        this.fillElligibleProjects(projectList);
+        fillElligibleProjects(projectList);
         
         while (true) {
             UIHelper.printHeader("APPLICANT MENU");

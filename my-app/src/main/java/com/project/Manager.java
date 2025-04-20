@@ -3,20 +3,16 @@ package com.project;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Manager extends User {
-	
-	
-	ExcelReader reader = new ExcelReader();
-//	List<Manager> managerList = reader.readManagers("C:\\Shivaani\\java_bto_new\\sc2002-project (1)\\sc2002-project\\data\\ManagerList.xlsx");
 
 	private List<Project> myProjects;
-	Project selectedProject = null;
-//	public Object activeProject;
+	Project selectedProject;
+	Project activeProject;
+
 
 	public Manager(String name, String nric, int age, String maritalStatus, String password) {
 		super(name, nric, age, maritalStatus, password);
@@ -27,13 +23,6 @@ public class Manager extends User {
 		return "Manager";
 	}
 
-	String status = "ON";
-
-
-	boolean exit = false;
-	Project activeProject = null;
-	LocalDate openDate = null;
-	LocalDate closeDate = null;
 	FilterMyProjects filter = new FilterMyProjects();
 	
 	//RETURN ACTIVE PROJECT OF THE MANAGER
@@ -78,6 +67,8 @@ public class Manager extends User {
 			UIHelper.printAction("Create a New Project");
 			
 			DateTimeFormatter dateForm = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			LocalDate openDate = null;
+			LocalDate closeDate = null;
 			try {
 			System.out.println("Enter name of new Project:");
 			String name = scanner.nextLine();
@@ -401,14 +392,14 @@ public class Manager extends User {
 		selectedProject = selectProjectFromMyProjects(projectList, scanner);
 		if (selectedProject == null) return;
 
-	    Map<Officer, Project> allPending = Officer.getPendingOfficers();
+
 	    List<Officer> pendingOfficers = new ArrayList<>();
 
-	    for (Map.Entry<Officer, Project> entry : allPending.entrySet()) {
-	        if (entry.getValue() == selectedProject) {
-	            pendingOfficers.add(entry.getKey());
-	        }
-	    }
+		for (Officer officer : Officer.getPendingOfficers()) {
+			if (officer.getRegistrationStatus().equals("Pending")) {
+				pendingOfficers.add(officer);
+			}
+		}
 	    
 	    UIHelper.printDivider();
 

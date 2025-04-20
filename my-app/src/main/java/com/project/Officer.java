@@ -5,15 +5,13 @@ import java.util.stream.Collectors;
 import java.time.LocalDate;
 // import java.util.stream.Stream;
 import java.util.List;
-import java.util.Map;
-// import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.ArrayList;
 public class Officer extends Applicant{
 
     List<Project> undertakenProjects;
     private String registrationStatus = "Not Registered"; // "Not Registered", "Pending", "Approved", "Rejected"
     private Project registeredProject = null;
-    public static Map<Officer, Project> pendingOfficer = new HashMap<>();
+    public static List<Officer> pendingOfficer = new ArrayList<>();
 
     public Officer(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
@@ -32,7 +30,7 @@ public class Officer extends Applicant{
     public void setRegistrationStatus(String status) {
         this.registrationStatus = status;
     }
-    public static Map<Officer,Project> getPendingOfficers() {
+    public static List<Officer> getPendingOfficers() {
         return pendingOfficer;
     }
 
@@ -138,7 +136,7 @@ public class Officer extends Applicant{
     
     public void registerAsOfficer(Scanner scanner, List<Project> projectList) {
         UIHelper.printSubHeader("Register as HDB Officer");
-        if (!this.registrationStatus.equals("Not Registered") || !this.registrationStatus.equals("Rejected")) {
+        if (this.registrationStatus.equals("Registered") || this.registrationStatus.equals("Approved")) {
             System.out.println("You have registration pending / already registered");
             return;
         }
@@ -180,7 +178,7 @@ public class Officer extends Applicant{
             }
             else{
                 registeredProject = selected;
-                pendingOfficer.put(this, this.registeredProject);
+                pendingOfficer.add(this);
                 registrationStatus = "Pending";
                 System.out.println("Registration submitted. Awaiting manager approval.");
             }
