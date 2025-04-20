@@ -5,13 +5,15 @@ import java.util.stream.Collectors;
 import java.time.LocalDate;
 // import java.util.stream.Stream;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+// import java.util.ArrayList;
+import java.util.HashMap;
 public class Officer extends Applicant{
 
     List<Project> undertakenProjects;
-    private String registrationStatus = "Not Registered";
+    private String registrationStatus = "Not Registered"; // "Not Registered", "Pending", "Approved", "Rejected"
     private Project registeredProject = null;
-    public static List<Officer> pendingOfficer = new ArrayList<>();
+    public static Map<Officer, Project> pendingOfficer = new HashMap<>();
 
     public Officer(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
@@ -23,7 +25,18 @@ public class Officer extends Applicant{
         return "Officer";
     }
 
-    
+    public String getRegistrationStatus() {
+        return this.registrationStatus;
+    }
+
+    public void setRegistrationStatus(String status) {
+        this.registrationStatus = status;
+    }
+    public static Map<Officer,Project> getPendingOfficers() {
+        return pendingOfficer;
+    }
+
+
     public void viewUndertakenProjects() {
         for (int i=0; i < undertakenProjects.size(); i++) {
             System.out.println("[" + (i+1) + "] " + undertakenProjects.get(i).getName());
@@ -42,7 +55,7 @@ public class Officer extends Applicant{
                     .collect(Collectors.joining(", "))
             );
             System.out.println("Manager: " + undertakenProjects.get(i).getManager().getName());
-            System.out.println("---------------------------");
+            UIHelper.printProjectFooter();
         }
     }
     
@@ -71,19 +84,21 @@ public class Officer extends Applicant{
         }
     }
 
-    public void replyToInquiry(Scanner scanner) {
-        System.out.println("\n--- Reply to Inquiries ---");
+    public void replyToInquiries(Scanner scanner) {
+        UIHelper.printSubHeader("Reply to Inquiries");
+        
     
         for (int i = 0 ; i < undertakenProjects.size(); i++) {
             System.out.println("[" + (i+1) + "] " + undertakenProjects.get(i).getName());
         }
     
         System.out.print("Select project index to reply to: ");
+        try {
         int projectIndex = Integer.parseInt(scanner.nextLine());
         if (projectIndex < 1 || projectIndex > undertakenProjects.size()) {
             System.out.println("Invalid index.");
             return;
-        }
+        } 
     
         Project selectedProject = undertakenProjects.get(projectIndex-1);
         List<Inquiry> inquiries = selectedProject.getInquiries();
@@ -100,6 +115,7 @@ public class Officer extends Applicant{
         }
     
         System.out.print("Select inquiry index to reply to: ");
+        
         int inquiryIndex = Integer.parseInt(scanner.nextLine());
         if (inquiryIndex < 1 || inquiryIndex > inquiries.size()) {
             System.out.println("Invalid index.");
@@ -115,16 +131,22 @@ public class Officer extends Applicant{
         System.out.print("Enter your reply: ");
         String reply = scanner.nextLine();
         selectedInquiry.setReply(reply);
-        System.out.println("Reply recorded.");
+        System.out.println("Reply recorded.");} catch (NumberFormatException e) {
+            System.out.println("Invalid input");
+        }
     }
     
     public void registerAsOfficer(Scanner scanner, List<Project> projectList) {
-        System.out.println("\n--- Register as HDB Officer ---");
+        UIHelper.printSubHeader("Register as HDB Officer");
+        if (!this.registrationStatus.equals("Not Registered") || !this.registrationStatus.equals("Rejected")) {
+            System.out.println("You have registration pending / already registered");
+            return;
+        }
         for (int i = 0; i < projectList.size(); i++) {
             Project p = projectList.get(i);
-            if (!p.getOfficersStr().contains(this.nric)) {
-                System.out.println("[" + (i + 1) + "] " + p.getName());
-            }
+            
+            System.out.println("[" + (i + 1) + "] " + p.getName());
+            
         }
 
         System.out.print("Select project number to register for: ");
@@ -158,7 +180,7 @@ public class Officer extends Applicant{
             }
             else{
                 registeredProject = selected;
-                pendingOfficer.add(this);
+                pendingOfficer.put(this, this.registeredProject);
                 registrationStatus = "Pending";
                 System.out.println("Registration submitted. Awaiting manager approval.");
             }
@@ -176,7 +198,7 @@ public class Officer extends Applicant{
     }
 
     public void bookFlat(Scanner scanner, List<Applicant> applicants) {
-        System.out.println("\n--- Flat Booking ---");
+        UIHelper.printSubHeader("Flat Booking");
 
         System.out.print("Enter applicant NRIC: ");
         String nric = scanner.nextLine().trim();
@@ -214,7 +236,8 @@ public class Officer extends Applicant{
     }
 
     public void generateReceipt(Applicant app) {
-        System.out.println("\n===== Booking Receipt =====");
+        UIHelper.printSubHeader("Booking Receipt");
+
         System.out.println("Name: " + app.getName());
         System.out.println("NRIC: " + app.getNric());
         System.out.println("Age: " + app.getAge());
@@ -222,15 +245,16 @@ public class Officer extends Applicant{
         System.out.println("Flat Type Booked: " + app.flatTypeBooked);
         System.out.println("Project Name: " + app.appliedProject.getName());
         System.out.println("Neighborhood: " + app.appliedProject.getNeighborhood());
-        System.out.println("===========================");
+        UIHelper.printDivider();
     }
     @Override
     public String showInterface(Scanner scanner, List<Project> projectList) {
         this.fillElligibleProjects(projectList);
         this.undertakenProjects = projectList.stream().filter(obj->obj.getOfficersStr().contains(this.nric)).collect(Collectors.toList());
         while (true) {
-            System.out.println("Officer Menu:");
-            System.out.println("Applicant functions");
+            UIHelper.printHeader("OFFICER MENU");
+            UIHelper.printSubHeader("Aplicant Functions");
+            
             System.out.println("1. Show Eligible Projects for Application");
             System.out.println("2. Change Filters");
             System.out.println("3. Apply For a Project");
@@ -238,13 +262,13 @@ public class Officer extends Applicant{
             System.out.println("5. Request for withdrawal");
             System.out.println("6. Enquiries");
 
-            System.out.println("Officer functions");
+            UIHelper.printSubHeader("Officer Functions");
             System.out.println("7. Show the undertaken projects");
             System.out.println("8. View and Reply Inquiries");
             System.out.println("9. Register for Project");
             System.out.println("10. View Registration Status");
             System.out.println("11. Book Flat for Applicant");
-            System.out.println("-----------------");
+            UIHelper.printProjectFooter();
             System.out.println("12. Reset Password");
             System.out.println("13. Logout");
             System.out.println("14. Quit");
@@ -273,7 +297,7 @@ public class Officer extends Applicant{
                     viewUndertakenProjects();
                     break;
                 case "8":
-                    replyToInquiry(scanner);
+                    replyToInquiries(scanner);
                     break;
                 case "9":
                     registerAsOfficer(scanner, projectList);

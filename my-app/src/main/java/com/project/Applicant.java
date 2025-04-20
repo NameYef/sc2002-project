@@ -1,27 +1,48 @@
 package com.project;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Applicant extends User {
 
     protected String applicationStatus;
-    protected String flatTypeBooked; // type1 or type2, set by Officer
+    protected boolean withdrawStatus;
+    
+    protected String flatTypeBooked; // 2-Room or 3-Room, set by Officer
     protected String appliedType; // stored this just in case, value can only be type1 or type2
+    protected String appliedFlatType;
+
+    
     protected Project appliedProject;
     protected List<Project> elligibleProjects;
 
+    
     public Applicant(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
         this.applicationStatus = "Unsuccessful";
         this.elligibleProjects = new ArrayList<>();
     }
-
+    public Project getAppliedProject() { return this.appliedProject; }
+    public String getAppliedType() { return this.appliedType; }
     public String getApplicationStatus() { return applicationStatus; }
     public String getPassword() { return password; }
-    
+    public String getAppliedFlatType() { return appliedFlatType; }
+    public boolean getWithdrawStatus() {
+        return withdrawStatus;
+    }
+
+    public void setWithdrawStatus(boolean withdrawStatus) {
+        this.withdrawStatus = withdrawStatus;
+    }
+    public void setAppliedFlatType(String appliedFlatType) { this.appliedFlatType = appliedFlatType; }
+    public void setApplicationStatus(String status) { this.applicationStatus = status; }
+    public void setAppliedProject(Project project) { this.appliedProject = project; }
+    public void setAppliedType(String type) { this.appliedType = type; }
+
     protected boolean isEligibleForFlatType(String flatType) {
         if (maritalStatus.equals("Married") && age >= 21) {
             return true;
@@ -74,7 +95,7 @@ public class Applicant extends User {
 
     // @Override
     protected void viewProjects() {
-        System.out.println("Viewing available projects for " + this.getRole() + " (" + maritalStatus + ", " + age + " years old).");
+        UIHelper.printProjectHeader("Available projects for " + name + " (" + maritalStatus + ", " + age + " years old).");
         System.out.println("Current Filters -> Neighborhood: " + 
             (this.filterNeighborhood == null ? "All" : this.filterNeighborhood) + 
             ", Flat Type: " + (this.filterFlatType == null ? "All" : this.filterFlatType));
@@ -115,6 +136,17 @@ public class Applicant extends User {
             return;
         }
 
+        UIHelper.printProjectHeader("Available Projects you can apply for:");
+    	int i = 1;
+        for (Project projects: this.elligibleProjects) {
+        	
+        	System.out.println(i + ":" + projects.getName());
+        	i++;
+        	
+        }
+
+        UIHelper.printDivider();
+
         System.out.println("Enter the name of the project to apply (or type 'exit' to cancel):");
         String inputProject = scanner.nextLine().trim();
 
@@ -142,6 +174,7 @@ public class Applicant extends User {
                     this.appliedProject = null;
                 } else {
                     this.appliedType = "type1";
+                    this.appliedFlatType = this.appliedProject.getType1();
                     this.applicationStatus = "Pending";
                     this.appliedProject.addApplicant(this);
                     this.appliedProject.addApplicantStr(this.nric);
@@ -155,6 +188,7 @@ public class Applicant extends User {
                     this.appliedProject = null;
                 } else {
                     this.appliedType = "type2";
+                    this.appliedFlatType = this.appliedProject.getType2();
                     this.applicationStatus = "Pending";
                     this.appliedProject.addApplicant(this);
                     this.appliedProject.addApplicantStr(this.nric);
@@ -199,34 +233,25 @@ public class Applicant extends User {
 
     // @Override
     public void withdrawApplication() {
-        if (this.appliedProject != null) {
-            if (this.applicationStatus.equals("Booked")) {
-                if (this.appliedType.equals("type1")) {
-                    this.appliedProject.setNoType1(this.appliedProject.getNoType1() + 1);
-                }
-                else if (this.appliedType.equals("type2")) {
-                    this.appliedProject.setNoType2(this.appliedProject.getNoType2() + 1);
-                }
-            }
-            this.applicationStatus = "Unsuccessful";
-            // this.appliedProject = null;
-            // this.appliedType = "";
-            this.appliedProject.removeApplicant(this); 
-
-            System.out.println("Application has been withdrawn.");
-        } else {
-            System.out.println("You have not applied for a project yet.");
+        if (this.appliedProject != null && !this.applicationStatus.equals("Unsuccessful") && !this.withdrawStatus) {
+            this.withdrawStatus = true;
+            System.out.println("Withdrawal has been requested");
+        }
+        else {
+            System.out.println("You have not applied for a project yet");
         }
     }
 
     private void submitInquiry(Scanner scanner) {
-        System.out.println("Available projects to inquire:");
+        
+        UIHelper.printProjectHeader("Available projects to enquire:");
+        UIHelper.printDivider();
         for (int i = 0; i < elligibleProjects.size(); i++) {
             System.out.println((i + 1) + ". " + elligibleProjects.get(i).getName());
         }
-    
+        UIHelper.printDivider();
         System.out.print("Select project number: ");
-        int index = Integer.parseInt(scanner.nextLine()) - 1;
+        try {int index = Integer.parseInt(scanner.nextLine()) - 1;
     
         if (index < 0 || index >= elligibleProjects.size()) {
             System.out.println("Invalid selection.");
@@ -241,11 +266,15 @@ public class Applicant extends User {
         Inquiry inquiry = new Inquiry(this, message, selectedProject.getName());
         selectedProject.addInquiry(inquiry);
     
-        System.out.println("Inquiry submitted!");
+        System.out.println("Inquiry submitted!");} 
+        catch (NumberFormatException e) {
+            System.out.println("Invalid input");
+        }
+
     }
     
     private void viewInquiries(List<Project> projectList) {
-        System.out.println("Your Inquiries:");
+        UIHelper.printProjectHeader("Your Inquiries:");
     
         for (Project project : projectList) {
             for (Inquiry inquiry : project.getInquiries()) {
@@ -319,7 +348,7 @@ public class Applicant extends User {
         }
     
         // Display inquiries with indices
-        System.out.println("Your inquiries:");
+        UIHelper.printProjectHeader("Your Inquiries:");
         for (int i = 0; i < myInquiries.size(); i++) {
             Inquiry inq = myInquiries.get(i);
             System.out.println((i + 1) + ". [" + inquiryProjects.get(i).getName() + "] " + inq.getMessage());
@@ -351,12 +380,13 @@ public class Applicant extends User {
 
     public void showInquiryInterface(Scanner scanner, List<Project> projectList) {
         while (true) {
-            System.out.println("\n--- Inquiry Menu ---");
+            UIHelper.printHeader("ENQUIRY MENU");
             System.out.println("1. Submit Inquiry");
             System.out.println("2. View My Inquiries");
             System.out.println("3. Edit Inquiry");
             System.out.println("4. Delete Inquiry");
             System.out.println("5. Exit");
+            UIHelper.printProjectFooter();
             System.out.print("Enter choice: ");
             String choice = scanner.nextLine();
     
@@ -393,7 +423,7 @@ public class Applicant extends User {
         this.fillElligibleProjects(projectList);
         
         while (true) {
-            System.out.println(" Applicant Menu:");
+            UIHelper.printHeader("APPLICANT MENU");
             System.out.println("1. View Projects");
             System.out.println("2. Change Filters");
             System.out.println("3. Apply For a Project");
@@ -403,7 +433,8 @@ public class Applicant extends User {
             System.out.println("7. Reset Password");
             System.out.println("8. Logout");
             System.out.println("9. Quit");
-            System.out.print("Choice: ");
+            UIHelper.printProjectFooter();
+            System.out.print("Enter your Choice: ");
             String input = scanner.nextLine();
 
             switch (input) {
@@ -436,5 +467,7 @@ public class Applicant extends User {
             }
         }
     }
+
+
 
 }

@@ -17,11 +17,10 @@ public class MainApplication {
             List<Manager> managerList = reader.readManagers("./data/ManagerList.xlsx");
             List<Officer> officerList = reader.readOfficers("./data/OfficerList.xlsx");
             List<Inquiry> inquiryList = reader.readInquiries("./data/InquiryList.xlsx", applicantList);
-
-
+            
+            
             reader.resolveProjectReferences(projectList, managerList, officerList, applicantList, inquiryList);
-            System.out.println(projectList.get(0).getOfficersStr());
-
+            
             // Combine all users for login
             List<User> allUsers = new ArrayList<>();
             allUsers.addAll(applicantList);

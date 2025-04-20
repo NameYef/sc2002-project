@@ -20,10 +20,15 @@ public class Project implements IProject {
     private List<String> officersStr;
     private List<String> applicantsStr;
 
+    public boolean isVisibility() {
+        return visibility;
+    }
+
     private Manager manager;
     private List<Officer> officers;
     private boolean visibility;
     private List<Applicant> applicants;
+    private List<Applicant> approvedApplicants = new ArrayList<>();
     private List<Inquiry> inquiries = new ArrayList<>();
 
     public Project(String name, String neighborhood, String type1, int noType1, double priceType1, String type2, int noType2, double priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr, boolean visibility, List<String> applicantsStr) {
@@ -41,9 +46,31 @@ public class Project implements IProject {
         this.officerSlot = officerSlot;
         this.officersStr = officersStr;
         this.applicantsStr = applicantsStr;
-
+        this.officers = new ArrayList<>();
         this.visibility = visibility;  
         this.applicants = new ArrayList<>(); // Fixed: Properly initialized
+    }
+
+    public Project(String name, String neighborhood, String type1, int noType1, double priceType1, String type2, int noType2, double priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, boolean visibility, Manager manager) {
+        this.name = name;
+        this.neighborhood = neighborhood;
+        this.type1 = type1;
+        this.noType1 = noType1;
+        this.priceType1 = priceType1;
+        this.type2 = type2;
+        this.noType2 = noType2;
+        this.priceType2 = priceType2;
+        this.openDate = openDate;
+        this.closeDate = closeDate;
+        this.managerStr = managerStr;
+        this.officerSlot = officerSlot;
+        this.manager = manager;
+        this.visibility = visibility;  
+        this.applicants = new ArrayList<>(); // Fixed: Properly initialized
+        this.officersStr = new ArrayList<>();
+        this.officers = new ArrayList<>();
+        this.applicantsStr = new ArrayList<>();
+        this.applicants = new ArrayList<>();
     }
 
     @Override
@@ -157,12 +184,18 @@ public class Project implements IProject {
         this.officersStr = officers;
     }
 
+    public void addOfficersStr(String officer) {
+        this.officersStr.add(officer);
+    }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public Manager getManager() {
         return manager;
     }
+
     public void setManager(Manager manager) {
         this.manager = manager;
     }
@@ -174,6 +207,9 @@ public class Project implements IProject {
         this.officers = officers;
     }
 
+    public void addOfficers(Officer officer) {
+        this.officers.add(officer);
+    }
     public List<String> getApplicantsStr() {
         return applicantsStr;
     }
@@ -206,9 +242,17 @@ public class Project implements IProject {
     public void setInquiries(List<Inquiry> inquiries) {
         this.inquiries = inquiries;
     }
+    
     public List<Applicant> getApplicants() {
         return applicants;
     }
 
+    public List<Applicant> getApprovedApplicants() {
+        return approvedApplicants;
+    }
+
+    public void addApprovedApplicant(Applicant applicant) {
+        approvedApplicants.add(applicant);
+    }
     
 }

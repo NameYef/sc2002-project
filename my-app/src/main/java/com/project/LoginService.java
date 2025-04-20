@@ -14,7 +14,7 @@ public class LoginService {
     }
 
     public User login(Scanner scanner) {
-        System.out.println("=== Login ===");
+        UIHelper.printSubHeader("Login Page");
         System.out.print("Enter user ID: ");
 
         String inputNric = scanner.nextLine().trim().toUpperCase();
