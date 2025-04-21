@@ -9,7 +9,7 @@ public class MainApplication {
         boolean run = true;
         Scanner scanner = new Scanner(System.in);
         ExcelReader reader = new ExcelReader();
-
+        ExcelWriter writer = new ExcelWriter();
         try {
             // Load data from Excel
             List<Project> projectList = reader.readProjects("./data/ProjectList.xlsx");
@@ -58,13 +58,13 @@ public class MainApplication {
             for (Project project : projectList) {
                 inquiryList.addAll(project.getInquiries());
             }
-            reader.writeApplicants("./data/ApplicantList.xlsx", applicantList);
-            reader.writeManagers("./data/ManagerList.xlsx", managerList);
-            reader.writeOfficers("./data/OfficerList.xlsx", officerList);
-            reader.writeProjects("./data/ProjectList.xlsx", projectList);
-            reader.writeInquiries("./data/InquiryList.xlsx", inquiryList);
-            reader.writeApplicantStatusList("./data/ApplicantStatusList.xlsx", applicantList);
-            reader.writeOfficerStatusList("./data/OfficerStatusList.xlsx", officerList);
+            writer.writeApplicants("./data/ApplicantList.xlsx", applicantList);
+            writer.writeManagers("./data/ManagerList.xlsx", managerList);
+            writer.writeOfficers("./data/OfficerList.xlsx", officerList);
+            writer.writeProjects("./data/ProjectList.xlsx", projectList);
+            writer.writeInquiries("./data/InquiryList.xlsx", inquiryList);
+            writer.writeApplicantStatusList("./data/ApplicantStatusList.xlsx", applicantList);
+            writer.writeOfficerStatusList("./data/OfficerStatusList.xlsx", officerList);
         } catch (IOException e) {
             System.out.println("Error reading Excel files: " + e.getMessage());
             e.printStackTrace();
