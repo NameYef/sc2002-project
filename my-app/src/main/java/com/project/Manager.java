@@ -263,6 +263,11 @@ public class Manager extends User {
 //						Project removed = projectList.remove(index);
 //						System.out.println("You are now deleting: " , )
 						Project removed = myProjects.get(index);
+						
+						if (activeProject == removed) {
+							System.out.println("You cannot delete active projects");
+							return;
+						}
 						projectList.remove(removed);
 						System.out.println("\nThe Project Deleted was: " + removed.getName());
 						
