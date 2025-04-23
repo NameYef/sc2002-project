@@ -49,6 +49,7 @@ public class Project implements IProject {
         this.officers = new ArrayList<>();
         this.visibility = visibility;  
         this.applicants = new ArrayList<>(); // Fixed: Properly initialized
+
     }
 
     public Project(String name, String neighborhood, String type1, int noType1, double priceType1, String type2, int noType2, double priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, boolean visibility, Manager manager) {
@@ -255,4 +256,5 @@ public class Project implements IProject {
         approvedApplicants.add(applicant);
     }
     
+
 }

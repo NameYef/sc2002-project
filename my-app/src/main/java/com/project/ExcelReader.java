@@ -290,6 +290,12 @@ public class ExcelReader {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             project.setApplicants(resolvedApplicants);
+
+            for (Applicant applicant : project.getApplicants()) {
+                if (applicant.getApplicationStatus().equals("Successful") || applicant.getApplicationStatus().equals("Booked")) {
+                    project.addApprovedApplicant(applicant);
+                }
+            }
         }
 
         // Link Inquiries to corresponding Projects
