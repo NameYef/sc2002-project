@@ -54,11 +54,7 @@ public class OfficerRegistrationManager {
             }
 
             Project selected = projectList.get(idx);
-            if (selected.getOfficers().size() >= selected.getOfficerSlot()) {
-                System.out.println("Max number of officers for this project reached already");
-                return;
-            }
-
+            
             boolean alreadyOfficer = selected.getOfficersStr().contains(officer.getNric());
 
             boolean alreadyApplicant = false;
@@ -72,13 +68,17 @@ public class OfficerRegistrationManager {
             if (alreadyOfficer || alreadyApplicant) {
                 System.out.println("You're already registered or applied to this project.");
                 return;
-            } else {
-                officer.setRegisteredProject(selected);
-                pendingOfficers.add(officer);
-                officer.setRegistrationStatus("Pending");
-                System.out.println("Registration submitted. Awaiting manager approval.");
+            } 
+            
+            if (selected.getOfficers().size() >= selected.getOfficerSlot()) {
+                System.out.println("Max number of officers for this project reached already");
+                return;
             }
-
+            
+            officer.setRegisteredProject(selected);
+            pendingOfficers.add(officer);
+            officer.setRegistrationStatus("Pending");
+            System.out.println("Registration submitted. Awaiting manager approval.");
         } catch (NumberFormatException e) {
             System.out.println("Invalid input.");
         }

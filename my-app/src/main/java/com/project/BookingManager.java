@@ -1,12 +1,11 @@
-/**
- * Helper class responsible for handling the booking process of flats
- * for applicants who have been approved.
- */
 package com.project;
 
 import java.util.Scanner;
 import java.util.List;
-
+/**
+ * Helper class responsible for handling the booking process of flats
+ * for applicants who have been approved.
+ */
 public class BookingManager {
     private Officer officer;
 

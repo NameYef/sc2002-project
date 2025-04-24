@@ -7,49 +7,50 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**
- * [Brief description of what the Applicant class represents or does]
+ * Represents an applicant for housing projects in the system.
+ * Handles application management, project viewing, and eligibility checking operations.
+ * Extends the User class and implements application and project view related operations.
  */
 public class Applicant extends User implements ApplicationOperations, ProjectViewOperations {
 
     // Application-related fields
 
-    /** [Description of applicationStatus] */
-    private String applicationStatus;
+/** Current status of the applicant's application ("Unsuccessful", "Successful", "Pending", "Booked") */
+private String applicationStatus;
 
-    /** [Description of withdrawStatus] */
-    private boolean withdrawStatus;
+/** Flag indicating whether the applicant has requested to withdraw their application */
+private boolean withdrawStatus;
 
-    /** [Description of flatTypeBooked] */
-    private String flatTypeBooked;
+/** The type of flat that the applicant has successfully booked ("2-Room", "3-Room") */
+private String flatTypeBooked;
 
-    /** [Description of appliedType] */
-    private String appliedType;
+/** The type of application the applicant has submitted ("type1", "type2") */
+private String appliedType;
 
-    /** [Description of appliedFlatType] */
-    private String appliedFlatType;
+/** The specific flat type that the applicant has applied for ("2-Room", "3-Room") */
+private String appliedFlatType;
 
-    /** [Description of appliedProject] */
-    private Project appliedProject;
+/** The project that the applicant has applied for */
+private Project appliedProject;
 
-    // Project-related fields
+/** List of projects that the applicant is eligible to apply for */
+private List<Project> eligibleProjects;
 
-    /** [Description of eligibleProjects] */
-    private List<Project> eligibleProjects;
+/** Utility class that checks the eligibility of the applicant for various project types */
+private ProjectEligibilityChecker eligibilityChecker;
 
-    /** [Description of eligibilityChecker] */
-    private ProjectEligibilityChecker eligibilityChecker;
-
-    /** [Description of projectDisplayer] */
-    private ProjectDisplayer projectDisplayer;
+/** Utility class that handles the display of projects to the applicant */
+private ProjectDisplayer projectDisplayer;
 
     /**
-     * [Constructor description]
+     * Creates a new Applicant with the specified personal details.
+     * Initializes the applicant's eligibility checker and project displayer.
      *
-     * @param name [Description]
-     * @param nric [Description]
-     * @param age [Description]
-     * @param maritalStatus [Description]
-     * @param password [Description]
+     * @param name The name of the applicant
+     * @param nric The National Registration Identity Card number of the applicant
+     * @param age The age of the applicant
+     * @param maritalStatus The marital status of the applicant
+     * @param password The password for the applicant's account
      */
     public Applicant(String name, String nric, int age, String maritalStatus, String password) {
         super(name, nric, age, maritalStatus, password);
@@ -61,69 +62,74 @@ public class Applicant extends User implements ApplicationOperations, ProjectVie
 
     // Getters and setters
 
-    /** @return [Description] */
+    /** @return The project that the applicant has applied for */
     public Project getAppliedProject() { return this.appliedProject; }
 
-    /** @return [Description] */
+    /** @return The type of application submitted ("type1" or "type2") */
     public String getAppliedType() { return this.appliedType; }
 
-    /** @return [Description] */
+    /** @return The current status of the applicant's application */
     public String getApplicationStatus() { return applicationStatus; }
 
-    /** @return [Description] */
+    /** @return The specific flat type that the applicant has applied for */
     public String getAppliedFlatType() { return appliedFlatType; }
 
-    /** @return [Description] */
+    /** @return Whether the applicant has requested to withdraw their application */
     public boolean getWithdrawStatus() { return withdrawStatus; }
 
-    /** @return [Description] */
+    /** @return The type of flat that the applicant has successfully booked */
     public String getFlatTypeBooked() { return flatTypeBooked; }
 
     /**
-     * @param flatTypeBooked [Description]
+     * Sets the type of flat that the applicant has booked
+     * @param flatTypeBooked The type of flat booked
      */
     public void setFlatTypeBooked(String flatTypeBooked) { this.flatTypeBooked = flatTypeBooked; }
 
     /**
-     * @param withdrawStatus [Description]
+     * Sets the withdrawal status of the applicant's application
+     * @param withdrawStatus True if the application is withdrawn, false otherwise
      */
     public void setWithdrawStatus(boolean withdrawStatus) { this.withdrawStatus = withdrawStatus; }
 
     /**
-     * @param appliedFlatType [Description]
+     * Sets the specific flat type that the applicant has applied for
+     * @param appliedFlatType The applied flat type
      */
     public void setAppliedFlatType(String appliedFlatType) { this.appliedFlatType = appliedFlatType; }
 
     /**
-     * @param status [Description]
+     * Updates the application status
+     * @param status The new application status
      */
     public void setApplicationStatus(String status) { this.applicationStatus = status; }
 
     /**
-     * @param project [Description]
+     * Sets the project that the applicant has applied for
+     * @param project The project applied for
      */
     public void setAppliedProject(Project project) { this.appliedProject = project; }
 
     /**
-     * @param type [Description]
+     * Sets the type of application (type1 or type2)
+     * @param type The application type
      */
     public void setAppliedType(String type) { this.appliedType = type; }
 
-    /** @return [Description] */
+    /** @return List of projects that the applicant is eligible to apply for */
     public List<Project> getEligibleProjects() { return this.eligibleProjects; }
 
-    /** @return [Description] */
+    /** @return Get the age of the applicant */
     public int getAge() { return this.age; }
 
-    /** @return [Description] */
+    /** @return Get the marital status of the applicant */
     public String getMaritalStatus() { return this.maritalStatus; }
 
     // Implementation of ProjectViewOperations
 
     /**
-     * [Description of what fillEligibleProjects does]
-     *
-     * @param projectList [Description]
+     * Populates the list of eligible projects for the applicant.
+     * @param projectList The list of all available projects to check for eligibility
      */
     @Override
     public void fillEligibleProjects(List<Project> projectList) {
@@ -146,7 +152,8 @@ public class Applicant extends User implements ApplicationOperations, ProjectVie
     }
 
     /**
-     * [Description of what viewProjects does]
+     * Displays the list of projects that the applicant is eligible to apply for
+     * using the project displayer.
      */
     @Override
     public void viewProjects() {
@@ -154,21 +161,21 @@ public class Applicant extends User implements ApplicationOperations, ProjectVie
     }
 
     /**
-     * [Description of what setProjectFilters does]
+     * Allows the applicant to set filters for viewing projects
+     * through the project displayer.
      *
-     * @param scanner [Description]
+     * @param scanner Scanner for user input
      */
     @Override
     public void setProjectFilters(Scanner scanner) {
         projectDisplayer.setFilters(scanner);
     }
 
-    // Implementation of ApplicationOperations
-
     /**
-     * [Description of what applyForProject does]
+     * Handles the application process for a project.
+     * Delegates to the ApplicationManager to manage the application.
      *
-     * @param scanner [Description]
+     * @param scanner Scanner for user input
      */
     @Override
     public void applyForProject(Scanner scanner) {
@@ -177,7 +184,8 @@ public class Applicant extends User implements ApplicationOperations, ProjectVie
     }
 
     /**
-     * [Description of what viewApplicationStatus does]
+     * Displays the current application status and details of the applied project.
+     * Shows information about the project, flat type, and application dates.
      */
     @Override
     public void viewApplicationStatus() {
@@ -208,7 +216,8 @@ public class Applicant extends User implements ApplicationOperations, ProjectVie
     }
 
     /**
-     * [Description of what withdrawApplication does]
+     * Processes a withdrawal request for the current application.
+     * Sets the withdrawal status to true if the applicant has an active application.
      */
     @Override
     public void withdrawApplication() {
@@ -222,10 +231,11 @@ public class Applicant extends User implements ApplicationOperations, ProjectVie
     }
 
     /**
-     * [Description of what showInquiryInterface does]
+     * Presents the inquiry interface to the applicant.
+     * Allows the applicant to make inquiries about projects.
      *
-     * @param scanner [Description]
-     * @param projectList [Description]
+     * @param scanner Scanner for user input
+     * @param projectList List of available projects
      */
     public void showInquiryInterface(Scanner scanner, List<Project> projectList) {
         InquiryManager inquiryManager = new InquiryManager(this);
@@ -233,7 +243,7 @@ public class Applicant extends User implements ApplicationOperations, ProjectVie
     }
 
     /**
-     * @return [Description of what role this object represents]
+     * @return The role of this user, which is "Applicant"
      */
     @Override
     public String getRole() {
@@ -241,11 +251,12 @@ public class Applicant extends User implements ApplicationOperations, ProjectVie
     }
 
     /**
-     * [Description of what showInterface does]
+     * Displays the main interface for the applicant and handles user input.
+     * Provides options for viewing projects, applying, checking status, and more.
      *
-     * @param scanner [Description]
-     * @param projectList [Description]
-     * @return [Description of what the return value represents]
+     * @param scanner Scanner for user input
+     * @param projectList List of available projects
+     * @return Command string indicating next action (e.g., "logout", "quit")
      */
     @Override
     public String showInterface(Scanner scanner, List<Project> projectList) {

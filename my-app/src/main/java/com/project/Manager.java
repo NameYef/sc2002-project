@@ -12,18 +12,32 @@ import java.time.format.DateTimeFormatter;
  * Managers are responsible for project creation, managing officers, handling applicants,
  * and overseeing the entire application process.
  */
-
 public class Manager extends User {
 
+	/**
+	 * List of projects created and managed by this manager.
+	 */
 	private List<Project> myProjects;
-	Project selectedProject;
-	Project activeProject;
-	List<Project> filteredList;
 
-	DateTimeFormatter dateForm = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	LocalDate openDate = null;
-	LocalDate closeDate = null;
-	String flat = null;
+	/**
+	 * Currently selected project for operations that require a project context.
+	 */
+	Project selectedProject;
+
+	/**
+	 * The currently active project that falls within the current date range.
+	 */
+	Project activeProject;
+
+	/**
+	 * Filtered list of projects based on applied search criteria.
+	 */
+    List<Project> filteredList;
+
+    /**
+     * Utility object for filtering projects based on different criteria.
+     */
+    FilterMyProjects filter = new FilterMyProjects();
 
     /**
      * Creates a new Manager with personal information.
@@ -47,24 +61,82 @@ public class Manager extends User {
 	public String getRole() {
 		return "Manager";
 	}
+	
+	/**
+	 * Sets the active project for this manager based on the current date.
+	 * A project is active if today's date falls within its open and close dates.
+	 *
+	 * @param projectList The list of all projects
+	 */
+	public void setActiveProject(List<Project> projectList) {
+	    LocalDate today = LocalDate.now();
+
+	    this.activeProject = projectList.stream()
+	            .filter(project -> project.getManagerStr() != null && project.getManagerStr().equals(this.getNric()))
+	            .filter(Project::isVisible)
+	            .filter(project -> 
+	                (today.isEqual(project.getOpenDate()) || today.isEqual(project.getCloseDate())) ||
+	                (project.getOpenDate().isBefore(today) && project.getCloseDate().isAfter(today))
+	            )
+	            .findFirst()
+	            .orElse(null);
+
+	    if (this.activeProject != null) {
+	        System.out.println("Current Active Project: " + activeProject.getName());
+	    } else {
+	        UIHelper.printProjectHeader("You have no Active Project");
+	    }
+	}
 
 	/**
-     * Filter utility for managing project lists
-     */
-	FilterMyProjects filter = new FilterMyProjects();
+	 * Returns the currently active project for this manager.
+	 *
+	 * @return The active project, or null if no project is active
+	 */
+	public Project getActiveProject(){
+		return this.activeProject;
+	}
+	
+	
+    /**
+	 * Checks if there's a date conflict with existing projects when creating a new project.
+	 * A conflict exists if the new project's date range overlaps with any existing project managed by this manager.
+	 *
+	 * @param newOpen     The opening date of the new project
+	 * @param newClose    The closing date of the new project
+	 * @param projectList The list of all projects to check against
+	 * @return The first project that conflicts with the new dates, or null if no conflicts
+	 */
+	private Project getDateConflictProject(LocalDate newOpen, LocalDate newClose, List<Project> projectList) {
+		return projectList.stream()
+				.filter(p -> p.getManagerStr().equals(this.getNric()))
+				.filter(p -> !(newClose.isBefore(p.getOpenDate()) || newOpen.isAfter(p.getCloseDate())))
+				.findFirst()
+				.orElse(null);
+	}
 
-	// CREATE A PROJECT
+	/**
+	 * Creates a new project with the given details and adds it to the project list.
+	 * The manager cannot create a new project if they already have an active project.
+	 *
+	 * @param scanner     The scanner for user input
+	 * @param projectList The list of all projects
+	 */
 	public void createProject(Scanner scanner, List<Project> projectList){
+		
+
 		if (getActiveProject() != null){
 			UIHelper.printDivider();
 			System.out.println("\nYou already have an Active Project.....");
 			System.out.println("You are not allowed to create a New Project!");
-
+			return;
 		}
 		else {
-			UIHelper.printAction("Add new Project");
 			UIHelper.printAction("Create a New Project");
-
+			
+			DateTimeFormatter dateForm = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			LocalDate openDate = null;
+			LocalDate closeDate = null;
 			try {
 			System.out.println("Enter name of new Project:");
 			String name = scanner.nextLine();
@@ -106,6 +178,7 @@ public class Manager extends User {
 				}
 		    }
 
+
 			while (true) {
 		        System.out.println("Enter application closing date (dd/MM/yyyy):");
 		        try {closeDate = LocalDate.parse(scanner.nextLine(), dateForm);
@@ -126,6 +199,9 @@ public class Manager extends User {
 					System.out.println("Invalid Input!");
 				}
 		    }
+			
+
+
 
 			Project newProj = new Project(name, neighbourhood, type1, notype1, pricetype1, type2, notype2, pricetype2,openDate, closeDate, this.getNric(),officerSlot, false, this);
 
@@ -151,6 +227,7 @@ public class Manager extends User {
 		selectedProject = selectProjectFromMyProjects(projectList, scanner);
 	    if (selectedProject == null) return;
 
+		
 		System.out.println();
 		
 		UIHelper.printProjectHeader("Current Project Details:");
@@ -163,12 +240,13 @@ public class Manager extends User {
 	    UIHelper.printField("7. Price of 3-room", String.valueOf(selectedProject.getPriceType2()));
 	    UIHelper.printField("8. Application open-date", selectedProject.getOpenDate().toString());
 	    UIHelper.printField("9. Application close-date", selectedProject.getCloseDate().toString());
-//	    UIHelper.printField("10.Visibility", selectedProject.isVisible() ? "ON" : "OFF");
+	    UIHelper.printField("10. Visibility", selectedProject.isVisible() ? "ON" : "OFF");
 		UIHelper.printDivider();
 		System.out.println();
 		
 		System.out.println("Which Field do you want to edit?");
 
+		
 		String detail = scanner.nextLine().trim();
 
 		switch (detail) {
@@ -219,126 +297,243 @@ public class Manager extends User {
 			selectedProject.setCloseDate(LocalDate.parse(scanner.nextLine(), fdate));
 			break;
 		}
-//		case "10" : {
-//			UIHelper.printDivider();
-//			System.out.println("Toggling visibility status...");
-//			UIHelper.printDivider();
-//			selectedProject.toggleVisibility(!selectedProject.isVisible());
-//			System.out.println("New Visibility Status: " + (selectedProject.isVisible() ? "ON" : "OFF"));
-//			break;
-//		}
+		case "10" : {
+			UIHelper.printDivider();
+			System.out.println("Toggling visibility status...");
+			UIHelper.printDivider();
+			selectedProject.toggleVisibility(!selectedProject.isVisible());
+			System.out.println("New Visibility Status: " + (selectedProject.isVisible() ? "ON" : "OFF"));
+			break;
+		}
 		default : System.out.println("Invalid selection....");
 	}
 	System.out.println("Updated Successfully!");
 	}
 
-	//DELETE A PROJECT
-	public void deleteEntry(Scanner scanner, List<Project> projectList) {
-		UIHelper.printAction("Delete an Existing Project");
+	/**
+	 * Removes a selected project from the project list.
+	 * Active projects cannot be deleted.
+	 *
+	 * @param scanner     The scanner for user input
+	 * @param projectList The list of all projects
+	 */
+    public void deleteEntry(Scanner scanner, List<Project> projectList) {
+        UIHelper.printAction("Delete an Existing Project");
 
-		myProjects = filter.filterMyProject(projectList, this.getNric());
-			
+        myProjects = filter.filterMyProject(projectList, this.getNric());
+        
 
-		boolean exit = false;
-		while (!exit) {
-			if (myProjects.isEmpty()) {
-				System.out.println("There are no Projects to Delete.....");
-				UIHelper.printDivider();
-				return;
-			}
+        boolean exit = false;
+        while (!exit) {
+            if (myProjects.isEmpty()) {
+                System.out.println("There are no Projects to Delete.....");
+                UIHelper.printDivider();
+                return;
+            }
 
-			printProjectSelectionMenu(myProjects);
+            printProjectSelectionMenu(myProjects);
 
-			System.out.print("Which Project would you like to Delete? (type 'exit' to leave)\n");
-			UIHelper.printDivider();
-			String input = scanner.nextLine();
+            System.out.print("Which Project would you like to Delete? (type 'exit' to leave) ");
+            String input = scanner.nextLine();
 
-			if (input.equalsIgnoreCase("exit")) {
-				exit = true;
-				continue;
-			}
+            if (input.equalsIgnoreCase("exit")) {
+                exit = true;
+                continue;
+            }
 
-			try {
-				int index = Integer.parseInt(input) - 1;
+            try {
+                int index = Integer.parseInt(input) - 1;
 
-				if (index < 0 || index >= projectList.size()) {
-					System.out.println("The number is not in the list!");
-				} else {
-					Project removed = myProjects.get(index);
-					if (activeProject == removed) {
-						System.out.println("You cannot delete active projects");
-						return;
-					}
-					projectList.remove(removed);
-					System.out.println("\nThe Project Deleted was: " + removed.getName());
-						
-					setActiveProject(projectList);
-						
-					exit = true;
-				}
-				} catch (NumberFormatException e) {
-					System.out.println("Please enter a valid number....");
-				}
-			}
-			UIHelper.printDivider();
-		}
+                if (index < 0 || index >= projectList.size()) {
+                    System.out.println("The number is not in the list!");
+                } else {
+//						Project removed = projectList.remove(index);
+//						System.out.println("You are now deleting: " , )
+                    Project removed = myProjects.get(index);
+                    
+                    if (activeProject == removed) {
+                        System.out.println("You cannot delete active projects");
+                        return;
+                    }
+                    projectList.remove(removed);
+                    System.out.println("\nThe Project Deleted was: " + removed.getName());
+                    
+                    setActiveProject(projectList);
+                    
+                    exit = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number....");
+            }
+        }
+    }
+    /**
+     * Displays a menu with filtering options for projects.
+     * Allows filtering by neighborhood, application date range, or price range.
+     *
+     * @param scanner      The scanner for user input
+     * @param projectList  The list of projects to filter
+     */
+    private void FilterMenu(Scanner scanner,List<Project> projectList) {
+        System.out.println("------------------Filter Menu----------------------");
+        System.out.println("1.Neighbourhood |2.Application Date |3.Price Range ");
+        System.out.println("---------------------------------------------------");
+        System.out.println("Enter your choice: ");
+        try {
+        int target = Integer.parseInt(scanner.nextLine().trim());
+        UIHelper.printDivider();
+        switch(target) {
+            case 1:
 
-		// SEE MY PROJECTS
-	public void seeMyProjectList(Scanner scanner,List<Project> projectList) {
-		UIHelper.printAction("View My Projects");
-		myProjects = filter.filterMyProject(projectList, this.getNric());
-		UIHelper.printDivider();
-		System.out.println("Do you want to View with Filters? Y/N");
-		UIHelper.printDivider();
-		String choice = scanner.nextLine().trim();
+                System.out.println("Enter the Neighbourhood you want to filter by:");
+                String place = scanner.nextLine().trim();
+                filteredList = filter.filterByNeighborhood(projectList,place);
+                if (filteredList.isEmpty()) {
+                    UIHelper.printDivider();
+                    System.out.println("No Projects with that filter");
+                    UIHelper.printDivider();
+                    return;
+                }
 
-		switch (choice.toUpperCase()) {
-			case "Y":
-				FilterMenu(scanner,myProjects);
-				break;
+                for (Project p : filteredList) {
+                    System.out.println();
+                    UIHelper.printProjectHeader("Project List based on " + place);
+                    printProjectDetails(p);
+                    UIHelper.printDivider();
 
-			case "N":
-				for(Project p : myProjects) {
-					System.out.println();
-					UIHelper.printProjectHeader("Project Details");
-					printProjectDetails(p);
-					UIHelper.printDivider();
+                }
+                break;
+            case 2:
+                try {
+                    DateTimeFormatter dateForm = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    System.out.println("Enter the Opening Application Date (DD/MM/YYYY):");
+                    LocalDate openDate = LocalDate.parse(scanner.nextLine().trim(), dateForm);
 
-				}
-				break;
+                    System.out.println("Enter the Closing Application Date (DD/MM/YYYY):");
+                    LocalDate closeDate = LocalDate.parse(scanner.nextLine().trim(), dateForm);
 
-			default: System.out.println("Invalid choice!");
+                    if (closeDate.isBefore(openDate)) {
+                        System.out.println("Closing date cannot be before the opening date.");
+                        UIHelper.printDivider();
+                        return;
+                    }
 
-		}
+                    filteredList = filter.filterByDateRange(projectList, openDate, closeDate);
+                    if (filteredList.isEmpty()) {
+                        UIHelper.printDivider();
+                        System.out.println("No Projects with that filter.");
+                        UIHelper.printDivider();
+                        return;
+                    }
 
-	}
-	// SEE ALL PROJECTS
-	public void seeAllProjectList(Scanner scanner,List<Project> projectList) {
-		UIHelper.printAction("View All Projects");
-		UIHelper.printDivider();
-		System.out.println("Do you want to View with Filters? Y/N");
-		UIHelper.printDivider();
-		String choice = scanner.nextLine().trim();
+                    for (Project p : filteredList) {
+                        System.out.println();
+                        UIHelper.printProjectHeader("Project List from " + openDate + " to " + closeDate);
+                        printProjectDetails(p);
+                        UIHelper.printDivider();
+                    }
 
-		switch (choice.toUpperCase()) {
-			case "Y":
-				FilterMenu(scanner,projectList);
-				break;
+                } catch (Exception e) {
+                    System.out.println("Invalid date format. Please enter in DD/MM/YYYY.");
+                    UIHelper.printDivider();
+                }
+                break;
+            case 3:
+                System.out.println("Enter the Minimum Price you want to filter by:");
+                double minPrice = Double.parseDouble(scanner.nextLine());
 
-			case "N":
-				for(Project p : projectList) {
-					System.out.println();
-					UIHelper.printProjectHeader("Project Details - Manager (" + p.getManager().getName() + ")");
-					printProjectDetails(p);
-					UIHelper.printDivider();
+                System.out.println("Enter the Maximum Price you want to filter by:");
+                double maxPrice = Double.parseDouble(scanner.nextLine());
+                UIHelper.printDivider();
+                System.out.println("Apply filter to both flat types? Y/N");
+                String choice = scanner.nextLine().trim();
 
-				}
-				break;
+                filteredList = filter.filterByPriceRange(projectList, minPrice, maxPrice, choice.toUpperCase());
+                if (filteredList.isEmpty()) {
+                    UIHelper.printDivider();
+                    System.out.println("No Projects with that filter");
+                    UIHelper.printDivider();
+                    return;
+                }
+                for(Project p : filteredList) {
+                    System.out.println();
+                    UIHelper.printProjectHeader("Project List ranging from " + "$"+minPrice + " to " + "$"+ maxPrice);
+                    printProjectDetails(p);
+                    UIHelper.printDivider();
 
-			default: System.out.println("Invalid choice!");
+                }
+        }} catch (Exception e) {
+            System.out.println("Invalid input!");
+            return;
+        }
 
-		}
-	}
+    }
+	/**
+	 * Displays the list of projects managed by this manager.
+	 * Provides filtering options for refined search.
+	 *
+	 * @param scanner     The scanner for user input
+	 * @param projectList The list of all projects
+	 */
+    public void seeMyProjectList(Scanner scanner,List<Project> projectList) {
+        UIHelper.printAction("View My Projects");
+        myProjects = filter.filterMyProject(projectList, this.getNric());
+        UIHelper.printDivider();
+        System.out.println("Do you want to View with Filters? Y/N");
+        UIHelper.printDivider();
+        String choice = scanner.nextLine().trim();
+
+        switch (choice.toUpperCase()) {
+            case "Y":
+                FilterMenu(scanner,myProjects);
+                break;
+
+            case "N":
+                for(Project p : myProjects) {
+                    System.out.println();
+                    UIHelper.printProjectHeader("Project Details");
+                    printProjectDetails(p);
+                    UIHelper.printDivider();
+
+                }
+                break;
+
+            default: System.out.println("Invalid choice!");
+        }
+    }
+    /**
+	 * Displays the list of all projects in the system.
+	 * Provides filtering options for refined search.
+	 *
+	 * @param scanner     The scanner for user input
+	 * @param projectList The list of all projects
+	 */
+    public void seeAllProjectList(Scanner scanner,List<Project> projectList) {
+        UIHelper.printAction("View All Projects");
+        UIHelper.printDivider();
+        System.out.println("Do you want to View with Filters? Y/N");
+        UIHelper.printDivider();
+        String choice = scanner.nextLine().trim();
+
+        switch (choice.toUpperCase()) {
+            case "Y":
+                FilterMenu(scanner,projectList);
+                break;
+
+            case "N":
+                for(Project p : projectList) {
+                    System.out.println();
+                    UIHelper.printProjectHeader("Project Details - Manager (" + p.getManager().getName() + ")");
+                    printProjectDetails(p);
+                    UIHelper.printDivider();
+
+                }
+                break;
+
+            default: System.out.println("Invalid choice!");
+
+        }
+    }
 	
 	/**
      * Toggles the visibility status of a selected project.
@@ -374,8 +569,10 @@ public class Manager extends User {
 		System.out.println("Updated Visibility Status: " + (selectedProject.isVisible() ? "ON" : "OFF"));
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid input. Please enter a number.");
-
+            return;
 		}
+		
+		
 	}
 	
 	/**
@@ -387,12 +584,13 @@ public class Manager extends User {
      */
 	public void viewallInquiries(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("View Inquiries of All Projects");
-		boolean exit = false;
-		int index = 0;
+	boolean exit = false;
+	int index = 0;
 	while (!exit) {
 		UIHelper.printProjectHeader("All Project List");
 		System.out.println("Choose the Project to view the Inquiries");
 		int i = 1;
+
 
 		for (Project p : projectList) {
 			System.out.println(i + ": " + p.getName());
@@ -421,7 +619,7 @@ public class Manager extends User {
 
 	if (inquiryList.isEmpty()) {
 		System.out.println("\nNo Inquiries!");
-
+		return;
 	}
 	else {
 		UIHelper.printSubHeader(selectedProject.getName() + " Inquiries");
@@ -448,8 +646,8 @@ public class Manager extends User {
 		selectedProject = selectProjectFromMyProjects(projectList, scanner);
 		if (selectedProject == null) return;
 
-		List<Officer> pendingOfficers = new ArrayList<>();
 
+	    List<Officer> pendingOfficers = new ArrayList<>();
 
 		for (Officer officer : Officer.getPendingOfficers()) {
 			if (officer.getRegistrationStatus().equals("Pending") && selectedProject.getName().equals(officer.getRegisteredProject().getName())) {
@@ -459,12 +657,12 @@ public class Manager extends User {
 	    
 	    UIHelper.printDivider();
 
-		if (pendingOfficers.isEmpty()) {
+	    if (pendingOfficers.isEmpty()) {
 	        System.out.println("\nNo Officers have registered for this project.");
 	        return;
 	    }
 
-	    UIHelper.printProjectHeader("Pending Officers for: " + selectedProject.getName());
+	    UIHelper.printSubHeader("Pending Officers for : " + selectedProject.getName());
 	    for (Officer officer : pendingOfficers) {
 	        UIHelper.printField("Name", officer.getName());
 	        UIHelper.printField("NRIC", officer.getNric());
@@ -509,7 +707,8 @@ public class Manager extends User {
 	                availableSlots -= 1;
 					targetOfficer.setRegistrationStatus("Approved");
 					
-					System.out.println("Officer " + targetOfficer.getName() + " approved and added to project.");
+
+	                System.out.println("Officer " + targetOfficer.getName() + " approved and added to project.");
 	                System.out.println("Remaining slots: " + availableSlots);
 	                break;
 
@@ -523,10 +722,19 @@ public class Manager extends User {
 	                System.out.println("Invalid input.");
 	                break;
 	        }
+	        
+	        
 	        pendingOfficers.remove(targetOfficer);
 	    }
 	}
-	// APPROVE APPLICANTS
+
+    /**
+     * Manages applicant applications for housing units.
+     * Allows approving or rejecting applicants based on availability.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void approveRejectApplicants(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Approve or Reject Project Applications");
 
@@ -543,26 +751,18 @@ public class Manager extends User {
 	        return;
 	    }
 
-
 	    UIHelper.printProjectHeader("Pending Applications for : " + selectedProject.getName());
 	    for (Applicant applicant : pendingApp) {
 	        UIHelper.printField("Name", applicant.getName());
 	        UIHelper.printField("NRIC", applicant.getNric());
 	        UIHelper.printField("Age", String.valueOf(applicant.getAge()));
-
-			if (applicant.getAppliedType().equalsIgnoreCase("type1")){
-				flat = "2-Room";
-			}
-			else if (applicant.getAppliedType().equalsIgnoreCase("type2")){
-				flat = "3-Room";
-			}
-			UIHelper.printField("Flat Type", flat);
+	        UIHelper.printField("Flat Type", applicant.getAppliedType());
 	        UIHelper.printDivider();
 	    }
 	    
-	    System.out.println("\n" + selectedProject.getType1() +  " units\t:" + selectedProject.getNoType1());
-	    System.out.println(selectedProject.getType2() +  " units	:" + selectedProject.getNoType2());
-		System.out.println();
+	    System.out.println("\n" + selectedProject.getType1() +  " units\t:" + String.valueOf(selectedProject.getNoType1()));
+	    System.out.println(selectedProject.getType1() +  " units	:" + String.valueOf(selectedProject.getNoType2()));
+
 	    while (!pendingApp.isEmpty()) {
 	        System.out.print("Enter Applicant NRIC to approve/reject (or type '0' to exit): ");
 	        String nric = scanner.nextLine().trim().toUpperCase();
@@ -586,26 +786,22 @@ public class Manager extends User {
 
 	        System.out.print("Approve (A) / Reject (R)? ");
 	        String reply = scanner.nextLine().trim();
-			int noflats2 = selectedProject.getNoType1();
-			int noflats3 = selectedProject.getNoType2();
 
 	        switch (reply.toUpperCase()) {
 	            case "A":
 	                String type = targetApp.getAppliedFlatType();
 	                if (type.equalsIgnoreCase("2-Room")) {
-	                    if (noflats2 <= 0) {
+	                    if (selectedProject.getNoType1() <= 0) {
 	                        System.out.println("No 2-Room units left. Cannot approve any more Applicants.");
 	                        break;
-			    }
-				noflats2 = noflats2 - 1;
-//	                     selectedProject.setNoType1(selectedProject.getNoType1() - 1);
+	                    }
+	                    // selectedProject.setNoType1(selectedProject.getNoType1() - 1);
 	                } else if (type.equalsIgnoreCase("3-Room")) {
-	                    if (noflats3 <= 0) {
+	                    if (selectedProject.getNoType2() <= 0) {
 	                        System.out.println("No 3-Room units left. Cannot approve any more Applicants.");
 	                        break;
 	                    }
-				noflats3 = noflats3 - 1 ;
-//	                     selectedProject.setNoType2(selectedProject.getNoType2() - 1);
+	                    // selectedProject.setNoType2(selectedProject.getNoType2() - 1);
 	                } else {
 	                    System.out.println("Unknown flat type.");
 	                    break;
@@ -628,13 +824,7 @@ public class Manager extends User {
 	                System.out.println("Invalid input. Skipping.");
 	                break;
 	        }
-
-			UIHelper.printDivider();
-	        UIHelper.printField("Remaining " + selectedProject.getType1() +  " units", String.valueOf(noflats2));
-	        UIHelper.printField("Remaining " + selectedProject.getType2() +  " units", String.valueOf(noflats3));
-			UIHelper.printDivider();
 	    }
-
 	}
 		
     /**
@@ -684,9 +874,17 @@ public class Manager extends User {
         System.out.println("Reply recorded.");} catch (NumberFormatException e) {
             System.out.println("Invalid input");
         }
-
 	}
-	// APPROVE APPLICANTS WITHDRAWAL
+	
+	
+	
+	/**
+	 * Handles applicant withdrawal requests for a selected project.
+	 * Allows the manager to approve or reject withdrawal applications.
+	 *
+	 * @param scanner     The scanner for user input
+	 * @param projectList The list of all projects
+	 */
 	public void approveRejectWithdrawals(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Approve or Reject Applicant Withdrawal");
 		
@@ -778,7 +976,14 @@ public class Manager extends User {
         }
         	
  }
-	//GENERATE APPLICANT REPORT
+
+ 	/**
+	 * Generates a report of applicants for a selected project based on specified filters.
+	 * Filters can be applied by flat type, marital status, or age range.
+	 *
+	 * @param scanner     The scanner for user input
+	 * @param projectList The list of all projects
+	 */
 	public void generateApplicantReport(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Generate Project Report");
 
@@ -788,8 +993,11 @@ public class Manager extends User {
 		UIHelper.printDivider();
 		System.out.println("By Which Field do you want to Filter?");
 		UIHelper.printDivider();
-		System.out.println("1. Flat Type| 2. Applicant's Marital Status| 3. Applicant's Age");
+		System.out.println("1. Flat Type                   | 2. Applicant's Age");
+		System.out.println("3. Applicant's Maritial Status");
 		UIHelper.printDivider();
+
+        try {
 		int field = Integer.parseInt(scanner.nextLine().trim());
 
 		List<Applicant> applicants = selectedProject.getApprovedApplicants();
@@ -807,23 +1015,23 @@ public class Manager extends User {
 				}
 				break;
 
-			case 2:
+			case 2: 
+                System.out.print("Enter Minimum Age: ");
+                int minAge = Integer.parseInt(scanner.nextLine().trim());
+                System.out.print("Enter Maximum Age: ");
+                int maxAge = Integer.parseInt(scanner.nextLine().trim());
+                for (Applicant app : applicants) {
+                    if (app.getAge() >= minAge && app.getAge() <= maxAge) {
+                        filteredApplicants.add(app);
+                    }
+                }
+                break;
+
+			case 3: 
 				System.out.print("Enter Marital Status to Filter (Single/Married): ");
 				String statusFilter = scanner.nextLine().trim();
 				for (Applicant app : applicants) {
 					if (app.getMaritalStatus().equalsIgnoreCase(statusFilter)) {
-						filteredApplicants.add(app);
-					}
-				}
-				break;
-
-			case 3:
-				System.out.print("Enter Minimum Age: ");
-				int minAge = Integer.parseInt(scanner.nextLine().trim());
-				System.out.print("Enter Maximum Age: ");
-				int maxAge = Integer.parseInt(scanner.nextLine().trim());
-				for (Applicant app : applicants) {
-					if (app.getAge() >= minAge && app.getAge() <= maxAge) {
 						filteredApplicants.add(app);
 					}
 				}
@@ -842,20 +1050,16 @@ public class Manager extends User {
 			System.out.println("No applicants found for the selected filter.");
 		} else {
 			for (Applicant app : filteredApplicants) {
-				if (app.getAppliedType().equalsIgnoreCase("type1")){
-					flat = "2-Room";
-				}
-				else if (app.getAppliedType().equalsIgnoreCase("type2")){
-					flat = "3-Room";
-				}
 				UIHelper.printField("Name", app.getName());
 				UIHelper.printField("NRIC", app.getNric());
 				UIHelper.printField("Age", String.valueOf(app.getAge()));
 				UIHelper.printField("Marital Status", app.getMaritalStatus());
-				UIHelper.printField("Applied Flat Type",flat);
+				UIHelper.printField("Applied Flat Type", app.getAppliedType());
 				UIHelper.printDivider();
 			}
-		}
+		}} catch (Exception e) {
+            System.out.println("Invalid input!");
+        }
 	}
 
     /**
@@ -871,8 +1075,8 @@ public class Manager extends User {
 	    }
 	    UIHelper.printDivider();
 	}
-
-	/**
+	
+    /**
      * Prints detailed information about a specific project.
      * Includes name, neighborhood, units, pricing, dates, officers, and visibility.
      *
@@ -891,14 +1095,21 @@ public class Manager extends User {
 
 		UIHelper.printField("10. Officers:", 
             p.getOfficers().stream()
-                .map(Officer::getName)
+                .map(Officer::getName) // extract the name
                 .collect(Collectors.joining(", "))
         );
 	    UIHelper.printField("11. Visibility", p.isVisible() ? "ON" : "OFF");
 	}
 
 	
-	// TO SHOW MANAGER SELECTIVE PROJECTS
+    /**
+     * Allows the manager to select one of their projects.
+     * Returns the selected project or null if selection fails.
+     *
+     * @param projectList The list of all projects
+     * @param scanner     The scanner for user input
+     * @return The selected project or null
+     */
 	private Project selectProjectFromMyProjects(List<Project> projectList, Scanner scanner) {
 	    myProjects = filter.filterMyProject(projectList, this.getNric());
 
@@ -920,131 +1131,15 @@ public class Manager extends User {
 	    return myProjects.get(target);
 	}
 
-	// FILTER MENU FOR MANAGER
-	private void FilterMenu(Scanner scanner,List<Project> projectList) {
-		System.out.println("------------------Filter Menu----------------------");
-		System.out.println("1.Neighbourhood |2.Application Date |3.Price Range ");
-		System.out.println("---------------------------------------------------");
-		System.out.println("Enter your choice: ");
 
-		int target = Integer.parseInt(scanner.nextLine().trim());
-		UIHelper.printDivider();
-		switch(target) {
-			case 1:
-
-				System.out.println("Enter the Neighbourhood you want to filter by:");
-				String place = scanner.nextLine().trim();
-				filteredList = filter.filterByNeighborhood(projectList,place);
-				if (filteredList.isEmpty()) {
-					UIHelper.printDivider();
-					System.out.println("No Projects with that filter");
-					UIHelper.printDivider();
-					return;
-				}
-
-				for (Project p : filteredList) {
-					System.out.println();
-					UIHelper.printProjectHeader("Project List based on " + place);
-					printProjectDetails(p);
-					UIHelper.printDivider();
-
-				}
-				break;
-			case 2:
-				try {
-					System.out.println("Enter the Opening Application Date (DD/MM/YYYY):");
-					openDate = LocalDate.parse(scanner.nextLine().trim(), dateForm);
-
-					System.out.println("Enter the Closing Application Date (DD/MM/YYYY):");
-					closeDate = LocalDate.parse(scanner.nextLine().trim(), dateForm);
-
-					if (closeDate.isBefore(openDate)) {
-						System.out.println("Closing date cannot be before the opening date.");
-						UIHelper.printDivider();
-						return;
-					}
-
-					filteredList = filter.filterByDateRange(projectList, openDate, closeDate);
-					if (filteredList.isEmpty()) {
-						UIHelper.printDivider();
-						System.out.println("No Projects with that filter.");
-						UIHelper.printDivider();
-						return;
-					}
-
-					for (Project p : filteredList) {
-						System.out.println();
-						UIHelper.printProjectHeader("Project List from " + openDate + " to " + closeDate);
-						printProjectDetails(p);
-						UIHelper.printDivider();
-					}
-
-				} catch (Exception e) {
-					System.out.println("Invalid date format. Please enter in DD/MM/YYYY.");
-					UIHelper.printDivider();
-				}
-				break;
-			case 3:
-				System.out.println("Enter the Minimum Price you want to filter by:");
-				double minPrice = Double.parseDouble(scanner.nextLine());
-
-				System.out.println("Enter the Maximum Price you want to filter by:");
-				double maxPrice = Double.parseDouble(scanner.nextLine());
-				UIHelper.printDivider();
-				System.out.println("Apply filter to both flat types? Y/N");
-				String choice = scanner.nextLine().trim();
-
-				filteredList = filter.filterByPriceRange(projectList, minPrice, maxPrice, choice.toUpperCase());
-				if (filteredList.isEmpty()) {
-					UIHelper.printDivider();
-					System.out.println("No Projects with that filter");
-					UIHelper.printDivider();
-					return;
-				}
-				for(Project p : filteredList) {
-					System.out.println();
-					UIHelper.printProjectHeader("Project List ranging from " + "$"+minPrice + " to " + "$"+ maxPrice);
-					printProjectDetails(p);
-					UIHelper.printDivider();
-
-				}
-		}
-
-	}
-	// CHECK IF GOT CONFLICT WITH OTHER PRJ WHEN CREATING A NEW PROJECT
-	private Project getDateConflictProject(LocalDate newOpen, LocalDate newClose, List<Project> projectList) {
-		return projectList.stream()
-				.filter(p -> p.getManagerStr().equals(this.getNric()))
-				.filter(p -> !(newClose.isBefore(p.getOpenDate()) || newOpen.isAfter(p.getCloseDate())))
-				.findFirst()
-				.orElse(null);
-	}
-
-	//RETURN ACTIVE PROJECT OF THE MANAGER
-	public void setActiveProject(List<Project> projectList) {
-		LocalDate today = LocalDate.now();
-
-		this.activeProject = projectList.stream()
-				.filter(project -> project.getManagerStr() != null && project.getManagerStr().equals(this.getNric()))
-				.filter(Project::isVisible)
-				.filter(project ->
-						(today.isEqual(project.getOpenDate()) || today.isEqual(project.getCloseDate())) ||
-								(project.getOpenDate().isBefore(today) && project.getCloseDate().isAfter(today))
-				)
-				.findFirst()
-				.orElse(null);
-
-		if (this.activeProject == null) {
-			UIHelper.printProjectHeader("You have no Active Project");
-		}
-	}
-
-	// GET THE ACTIVE PROJECT
-	public Project getActiveProject(){
-		return this.activeProject;
-	}
-
-	// MANAGER MENU 
+	/**
+	 * Displays the manager interface and handles user input for various management operations.
+	 * This is the main menu method for the manager role.
+	 *
+	 * @param scanner     The scanner for user input
+	 * @param projectList The list of all projects
+	 * @return A string indicating the next action ("logout", "quit", or the reset password result)
+	 */
 	public String showInterface(Scanner scanner, List<Project> projectList) {
     	System.out.println();
     	System.out.println("[ LOGIN SUCCESSFUL ] Welcome, " + getName() + "!\n");
@@ -1055,6 +1150,7 @@ public class Manager extends User {
     	} else {
     	    UIHelper.printProjectHeader("You have no Active Project at the moment..");
     	}
+
 
     	while (true) {
 
@@ -1068,7 +1164,7 @@ public class Manager extends User {
     	    System.out.println(" 5. View All Project List");
     	    System.out.println(" 6. Toggle Project Visibility");
     	    System.out.println(" 7. View All Project Inquiries");
-    	    System.out.println(" 8. View Your Project Inquiries");
+    	    System.out.println(" 8. Reply to Your Project Inquiries");
     	    System.out.println(" 9. Approve/Reject Officers");
     	    System.out.println("10. Approve/Reject Applicants");
     	    System.out.println("11. Approve/Reject Applicant Withdrawal");
@@ -1094,10 +1190,10 @@ public class Manager extends User {
     	            deleteEntry(scanner, projectList);
     	            break;
     	        case "4":
-    	            seeMyProjectList(scanner,projectList);
+    	            seeMyProjectList(scanner, projectList);
     	            break;
     	        case "5":
-    	            seeAllProjectList(scanner,projectList);
+    	            seeAllProjectList(scanner, projectList);
     	            break;
     	        case "6":
     	            toggleVisibility(scanner, projectList);
@@ -1134,5 +1230,3 @@ public class Manager extends User {
     	}
 	}
 }
-
-
