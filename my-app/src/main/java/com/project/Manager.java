@@ -7,25 +7,58 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a Manager user who can create and manage housing projects.
+ * Managers are responsible for project creation, managing officers, handling applicants,
+ * and overseeing the entire application process.
+ */
+
 public class Manager extends User {
 
-	private List<Project> myProjects;
-	Project selectedProject;
-	Project activeProject;
+    /** List of projects managed by this manager */
+    private List<Project> myProjects;
+    
+    /** The currently selected project for operations */
+    Project selectedProject;
+    
+    /** The manager's currently active project based on date criteria */
+    Project activeProject;
 
-
+    /**
+     * Creates a new Manager with personal information.
+     *
+     * @param name          The name of the manager
+     * @param nric          The NRIC (National Registration Identity Card) number
+     * @param age           The age of the manager
+     * @param maritalStatus The marital status of the manager
+     * @param password      The password for authentication
+     */
 	public Manager(String name, String nric, int age, String maritalStatus, String password) {
 		super(name, nric, age, maritalStatus, password);
 	}
 
+    /**
+     * Returns the role of this user.
+     *
+     * @return The string "Manager" indicating the user's role
+     */
 	@Override
 	public String getRole() {
 		return "Manager";
 	}
 
+	/**
+     * Filter utility for managing project lists
+     */
 	FilterMyProjects filter = new FilterMyProjects();
 	
-	//RETURN ACTIVE PROJECT OF THE MANAGER
+    /**
+     * Sets the active project for this manager based on current date.
+     * A project is considered active if today's date falls within its open and close dates,
+     * the project is visible, and the manager is assigned to it.
+     *
+     * @param projectList The list of all projects to search from
+     */
 	public void setActiveProject(List<Project> projectList) {
 	    LocalDate today = LocalDate.now();
 
@@ -46,14 +79,25 @@ public class Manager extends User {
 	    }
 	}
 
-
+    /**
+     * Gets the currently active project of this manager.
+     *
+     * @return The active project or null if no active project
+     */
 	public Project getActiveProject(){
 		return this.activeProject;
 	}
 	
 	
 	
-	// CREATE A PROJECT
+    /**
+     * Creates a new housing project if the manager doesn't have an active project.
+     * Prompts for all necessary project details like name, neighborhood, flat types,
+     * prices, officer slots, and application dates.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects to add the new project to
+     */
 	public void createProject(Scanner scanner, List<Project> projectList){
 		
 
@@ -125,7 +169,7 @@ public class Manager extends User {
 		    }
 			
 
-//			String name, String neighborhood, String type1, int noType1, int priceType1, String type2, int noType2, int priceType2, LocalDate openDate, LocalDate closeDate, String managerStr, int officerSlot, List<String> officersStr  
+
 
 			Project newProj = new Project(name, neighbourhood, type1, notype1, pricetype1, type2, notype2, pricetype2,openDate, closeDate, this.getNric(),officerSlot, false, this);
 
@@ -137,11 +181,16 @@ public class Manager extends User {
 		}
 	}
 
-	// EDIT A PROJECT 
+    /**
+     * Allows editing of an existing project's details.
+     * The manager can modify attributes such as name, neighborhood, pricing,
+     * number of units, visibility, and dates.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void editProject(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Edit My Project");
-		
-		// int i = 1;
 		
 		selectedProject = selectProjectFromMyProjects(projectList, scanner);
 	    if (selectedProject == null) return;
@@ -229,7 +278,13 @@ public class Manager extends User {
 	System.out.println("Updated Successfully!");
 	}
 
-	//DELETE A PROJECT
+    /**
+     * Deletes an existing project managed by this manager.
+     * Active projects cannot be deleted.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects to delete from
+     */
 		public void deleteEntry(Scanner scanner, List<Project> projectList) {
 			UIHelper.printAction("Delete an Existing Project");
 
@@ -281,18 +336,29 @@ public class Manager extends User {
 			}
 		}
 
-		// SEE MY PROJECTS
-		public void seeMyProjectList(List<Project> projectList) {
-			UIHelper.printAction("View My Projects");
-		myProjects = filter.filterMyProject(projectList, this.getNric());
-		for (Project p : myProjects) {
-			System.out.println();
-			UIHelper.printProjectHeader("My Project Details");
-			printProjectDetails(p);
-			UIHelper.printDivider();
+	/**
+     * Displays a list of all projects managed by this manager.
+     * Shows detailed information about each project.
+     *
+     * @param projectList The list of all projects to filter
+     */
+	public void seeMyProjectList(List<Project> projectList) {
+		UIHelper.printAction("View My Projects");
+	myProjects = filter.filterMyProject(projectList, this.getNric());
+	for (Project p : myProjects) {
+		System.out.println();
+		UIHelper.printProjectHeader("My Project Details");
+		printProjectDetails(p);
+		UIHelper.printDivider();
 		}
 	}
-		// SEE ALL PROJECTS
+
+	/**
+     * Displays a list of all projects in the system.
+     * Shows detailed information about each project.
+     *
+     * @param projectList The list of all projects
+     */
 	public void seeAllProjectList(List<Project> projectList) {
 		UIHelper.printAction("View All Projects");
 		for(Project p : projectList) {
@@ -304,7 +370,13 @@ public class Manager extends User {
 		}
 	}
 	
-	// TOGGLE VISIBILITY
+	/**
+     * Toggles the visibility status of a selected project.
+     * Visible projects can be seen by officers and applicants.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void toggleVisibility(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Toggle Project Visibility Status");
 		myProjects = filter.filterMyProject(projectList, this.getNric());
@@ -338,7 +410,13 @@ public class Manager extends User {
 		
 	}
 	
-	//   VIEW ALL INQUIRIES
+	/**
+     * Views all inquiries for any project in the system.
+     * Allows the manager to select a project and view all its inquiries.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void viewallInquiries(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("View Inquiries of All Projects");
 	boolean exit = false;
@@ -347,7 +425,7 @@ public class Manager extends User {
 		UIHelper.printProjectHeader("All Project List");
 		System.out.println("Choose the Project to view the Inquiries");
 		int i = 1;
-//		UIHelper.lower("The Inquiries");
+
 
 		for (Project p : projectList) {
 			System.out.println(i + ": " + p.getName());
@@ -390,7 +468,13 @@ public class Manager extends User {
 	}
 }
 	
-	// APPROVE OFFICERS
+	/**
+     * Manages officer applications for projects.
+     * Allows approving or rejecting officers who have applied to a project.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void approverejectOfficers(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Approve or Reject Officer Applications");
 
@@ -479,7 +563,13 @@ public class Manager extends User {
 	    }
 	}
 
-	// APPROVE APPLICANTS
+    /**
+     * Manages applicant applications for housing units.
+     * Allows approving or rejecting applicants based on availability.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void approveRejectApplicants(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Approve or Reject Project Applications");
 
@@ -487,14 +577,7 @@ public class Manager extends User {
 		if (selectedProject == null) return;
 		
 		List<Applicant> pendingApp = selectedProject.getApplicants();
-	    // Map<Applicant, Project> allPending = Applicant.getPendingApplication();
-	    // List<Applicant> pendingApp = new ArrayList<>();
 
-	    // for (Map.Entry<Applicant, Project> entry : allPending.entrySet()) {
-	    //     if (entry.getValue() == selectedProject) {
-	    //         pendingApp.add(entry.getKey());
-	    //     }
-	    // }
 
 	    UIHelper.printDivider();
 
@@ -583,7 +666,13 @@ public class Manager extends User {
 	    }
 	}
 		
-	// REPLY TO MY INQUIRIES
+    /**
+     * Responds to inquiries submitted for the manager's projects.
+     * Allows the manager to select an inquiry and provide a reply.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void replytoInquiries(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Reply to Your Project Inquiries");
 		
@@ -624,57 +713,17 @@ public class Manager extends User {
         System.out.println("Reply recorded.");} catch (NumberFormatException e) {
             System.out.println("Invalid input");
         }
-		// List<Inquiry> inquiryList = selectedProject.getInquiries();
-
-		// if (inquiryList.isEmpty()) {
-		// 	System.out.println("No Inquiries!");
-		// 	return;
-		// }
-
-		// List<Inquiry> pendingList = new ArrayList<>();
-		// for (Inquiry inquiry : inquiryList) {
-		// 	if (!inquiry.isReplied()) {
-		// 		pendingList.add(inquiry);
-		// 	}
-		// }
-		
-		// UIHelper.printSubHeader(selectedProject.getName() + " Inquiries");
-		
-		// if (pendingList.isEmpty()){
-		// 	System.out.println("No more Pending Inquiries in this Project!");
-		// }
-		// else {
-		// 	for (int i = 0; i < pendingList.size(); i++) {
-		// 		Inquiry inquiry = pendingList.get(i);
-		// 		System.out.println((i+1) + "From: " + inquiry.getApplicant().getName());
-		// 		System.out.println("Message: "+ inquiry.getMessage());
-				
-		// 		UIHelper.printDivider();
-		// 	}
-		// 	System.out.println("Which Inquiry do you want to reply to?");
-		// 	try {
-		// 	int enqno = Integer.parseInt(scanner.nextLine().trim()) - 1;
-		// 	if (enqno < 0 || enqno >= pendingList.size()) {
-		// 		System.out.println("Invalid Inquiry number.");
-		// 	} else {
-		// 		Inquiry message = pendingList.get(enqno);
-		// 		System.out.println("You are replying to: " + message.getMessage());
-		// 		System.out.println("Enter Reply: ");
-		// 		String Reply = scanner.nextLine();
-		// 		message.setReply(Reply);
-		// 		System.out.println("Reply saved: " + message.getReply());
-
-		// 		pendingList.remove(enqno);
-		// 	}
-		// } catch (NumberFormatException e) {
-		// 	System.out.println("Invalid input");
-		// }
-		// }
 	}
 	
 	
 	
-	// APPROVE APPLICANTS WITHDRAWAL
+    /**
+     * Handles withdrawal requests from approved applicants.
+     * Approving withdrawals releases housing units back to the available pool.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void approveRejectWithdrawals(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Approve or Reject Applicant Withdrawal");
 		
@@ -766,8 +815,14 @@ public class Manager extends User {
         }
         	
  }
-	//GENERATE APPLICANT REPOT
-	
+
+    /**
+     * Generates reports about applicants based on various filters.
+     * Allows filtering by flat type, project name, marital status, or age range.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     */
 	public void generateApplicantReport(Scanner scanner, List<Project> projectList) {
 		UIHelper.printAction("Generate Project Report");
 
@@ -851,7 +906,12 @@ public class Manager extends User {
 		}
 	}
 
-	// TO CHOOSE MANAGER SELECTIVE
+    /**
+     * Displays a menu of projects managed by this manager.
+     * Used for selection interfaces across manager operations.
+     *
+     * @param projects The list of projects to display
+     */
 	private void printProjectSelectionMenu(List<Project> projects) {
 	    UIHelper.printProjectHeader("MY PROJECTS");
 	    for (int i = 0; i < projects.size(); i++) {
@@ -859,8 +919,13 @@ public class Manager extends User {
 	    }
 	    UIHelper.printDivider();
 	}
-	
-	// TO SHOW PROJECT DETAILS 
+
+	/**
+     * Prints detailed information about a specific project.
+     * Includes name, neighborhood, units, pricing, dates, officers, and visibility.
+     *
+     * @param p The project to display details for
+     */
 	private void printProjectDetails(Project p) {
 	    UIHelper.printField("1. Name", p.getName());
 	    UIHelper.printField("2. Neighbourhood", p.getNeighborhood());
@@ -881,7 +946,14 @@ public class Manager extends User {
 	}
 
 	
-	// TO SHOW MANAGER PROJECTS
+    /**
+     * Allows the manager to select one of their projects.
+     * Returns the selected project or null if selection fails.
+     *
+     * @param projectList The list of all projects
+     * @param scanner     The scanner for user input
+     * @return The selected project or null
+     */
 	private Project selectProjectFromMyProjects(List<Project> projectList, Scanner scanner) {
 	    myProjects = filter.filterMyProject(projectList, this.getNric());
 
@@ -903,11 +975,14 @@ public class Manager extends User {
 	    return myProjects.get(target);
 	}
 
-
-		
-
-
-	// MANAGER MENU 
+    /**
+     * Displays the main interface for manager operations.
+     * Presents menu options and handles user navigation through the system.
+     *
+     * @param scanner     The scanner for user input
+     * @param projectList The list of all projects
+     * @return A string command indicating next action ("logout", "quit", or password reset result)
+     */
 	public String showInterface(Scanner scanner, List<Project> projectList) {
     	System.out.println();
     	System.out.println("[ LOGIN SUCCESSFUL ] Welcome, " + getName() + "!\n");
@@ -919,14 +994,10 @@ public class Manager extends User {
     	    UIHelper.printProjectHeader("You have no Active Project at the moment..");
     	}
 
-//    	System.out.println("NRIC : " + getNric());
 
     	while (true) {
 
     	    UIHelper.printHeader("MANAGER MENU");
-
-    	    // System.out.println("Logged in as: " + getName() + " (" + getNric() + ")");
-    	    // System.out.println();
 
     	    System.out.println("Choose an action:");
     	    System.out.println(" 1. Add New Project");
@@ -999,7 +1070,6 @@ public class Manager extends User {
     	            System.out.println("Invalid choice. Please try again.");
     	            break;
     	    }
-
-    	    }
+    	}
 	}
 }

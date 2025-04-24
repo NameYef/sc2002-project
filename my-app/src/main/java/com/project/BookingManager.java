@@ -1,17 +1,31 @@
+/**
+ * Helper class responsible for handling the booking process of flats
+ * for applicants who have been approved.
+ */
 package com.project;
 
 import java.util.Scanner;
 import java.util.List;
 
-
-// Manager class for handling flat bookings
 public class BookingManager {
     private Officer officer;
-    
+
+    /**
+     * Constructs a BookingManager with a specific officer.
+     *
+     * @param officer The officer managing the bookings.
+     */
     public BookingManager(Officer officer) {
         this.officer = officer;
     }
-    
+
+    /**
+     * Books a flat for an applicant based on their NRIC if they are eligible.
+     * Updates the application status and flat availability upon successful booking.
+     *
+     * @param scanner    Scanner for user input.
+     * @param applicants List of applicants to search from.
+     */
     public void bookFlat(Scanner scanner, List<Applicant> applicants) {
         UIHelper.printSubHeader("Flat Booking");
 
@@ -50,6 +64,12 @@ public class BookingManager {
         System.out.println("Applicant not found.");
     }
 
+    /**
+     * Generates and displays a booking receipt with the applicant's details
+     * and the flat they have booked.
+     *
+     * @param app The applicant for whom the receipt is generated.
+     */
     public void generateReceipt(Applicant app) {
         UIHelper.printSubHeader("Booking Receipt");
 

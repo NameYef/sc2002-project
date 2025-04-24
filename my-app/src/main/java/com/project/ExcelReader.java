@@ -10,8 +10,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.function.Function;
 
-
+/**
+ * Utility class for reading Excel files and converting rows into domain-specific Java objects
+ * such as {@link Project}, {@link Applicant}, {@link Manager}, {@link Officer}, and {@link Inquiry}.
+ * <p>
+ * Uses Apache POI for parsing `.xlsx` files.
+ */
 public class ExcelReader {
+    /**
+     * Reads project data from an Excel file and constructs a list of {@link Project} objects.
+     *
+     * @param filePath the path to the Excel file
+     * @return a list of Project instances
+     * @throws IOException if there is an error reading the file
+     */
 
     public List<Project> readProjects(String filePath) throws IOException {
         List<Project> projects = new ArrayList<>();
@@ -69,18 +81,37 @@ public class ExcelReader {
     }
 
     
+        /**
+     * Reads applicant data from an Excel file and constructs a list of {@link Applicant} objects.
+     *
+     * @param filePath the path to the Excel file
+     * @return a list of Applicant instances
+     * @throws IOException if there is an error reading the file
+     */
 
     public List<Applicant> readApplicants(String filePath) throws IOException {
         return readUsers(filePath, Applicant::new);
     }
 
-
+        /**
+     * Reads manager data from an Excel file and constructs a list of {@link Manager} objects.
+     *
+     * @param filePath the path to the Excel file
+     * @return a list of Manager instances
+     * @throws IOException if there is an error reading the file
+     */
 
     public List<Manager> readManagers(String filePath) throws IOException {
         return readUsers(filePath, Manager::new);
     }
 
-
+        /**
+     * Reads officer data from an Excel file and constructs a list of {@link Officer} objects.
+     *
+     * @param filePath the path to the Excel file
+     * @return a list of Officer instances
+     * @throws IOException if there is an error reading the file
+     */
 
     public List<Officer> readOfficers(String filePath) throws IOException {
         return readUsers(filePath, Officer::new);
@@ -114,12 +145,27 @@ public class ExcelReader {
         }
         return users;
     }
-    
+
+        /**
+     * Functional interface for creating user objects (such as {@link Applicant}, {@link Manager}, or {@link Officer}).
+     *
+     * @param <T> a type that extends {@link User}
+     */
+
     @FunctionalInterface
     private interface UserFactory<T extends User> {
         T create(String name, String nric, int age, String maritalStatus, String password);
     }
-    
+     
+        /**
+     * Reads inquiries from an Excel file and maps them to existing {@link Applicant} objects by NRIC.
+     *
+     * @param filePath   the path to the Excel file
+     * @param applicants list of Applicants for NRIC matching
+     * @return a list of Inquiry objects associated with applicants
+     * @throws IOException if there is an error reading the file
+     */
+
     public List<Inquiry> readInquiries(String filePath, List<Applicant> applicants) throws IOException {
         List<Inquiry> inquiries = new ArrayList<>();
         Map<String, Applicant> nricMap = applicants.stream().collect(Collectors.toMap(Applicant::getNric, a -> a));
@@ -158,6 +204,14 @@ public class ExcelReader {
         return inquiries;
     }
 
+        /**
+     * Updates a list of {@link Applicant} objects with their application status details from an Excel file.
+     *
+     * @param filename       the path to the Excel file
+     * @param applicantList  the list of applicants to update
+     * @param projectList    the list of available projects for matching applied project names
+     * @throws IOException if the file cannot be read
+     */
 
     public void readApplicantStatusList(String filename, List<Applicant> applicantList, List<Project> projectList) throws IOException {
         FileInputStream fis = new FileInputStream(filename);
@@ -197,6 +251,14 @@ public class ExcelReader {
         workbook.close();
         fis.close();
     }
+        /**
+     * Updates a list of {@link Officer} objects with their application and registration status details from an Excel file.
+     *
+     * @param filename      the path to the Excel file
+     * @param officerList   the list of officers to update
+     * @param projectList   the list of projects used for matching officer applications and registrations
+     * @throws IOException if the file cannot be read
+     */
 
     public void readOfficerStatusList(String filename, List<Officer> officerList, List<Project> projectList) throws IOException {
         FileInputStream fis = new FileInputStream(filename);
@@ -242,11 +304,29 @@ public class ExcelReader {
         fis.close();
     }
     
+        /**
+     * Gets the string content of a cell or returns a default value if the cell is null or blank.
+     *
+     * @param row          the row containing the cell
+     * @param index        the index of the cell in the row
+     * @param defaultValue the default value to return if the cell is blank
+     * @return the string content of the cell or the default value
+     */
+
     private static String getCellString(Row row, int index, String defaultValue) {
         Cell cell = row.getCell(index);
         return (cell == null || cell.getCellType() == CellType.BLANK) ? defaultValue : cell.getStringCellValue();
     }
     
+        /**
+     * Parses a boolean value from a cell, or returns a default value if the cell is null or unrecognized.
+     *
+     * @param row          the row containing the cell
+     * @param index        the index of the cell in the row
+     * @param defaultValue the default boolean value to return if the cell is blank
+     * @return the boolean value of the cell or the default value
+     */
+
     private static boolean getCellBoolean(Row row, int index, boolean defaultValue) {
         Cell cell = row.getCell(index);
         if (cell == null || cell.getCellType() == CellType.BLANK) return defaultValue;
@@ -256,10 +336,26 @@ public class ExcelReader {
         return defaultValue;
     }
     
+        /**
+     * Parses a boolean value from a cell, or returns a default value if the cell is null or unrecognized.
+     *
+     * @param date          the row containing the cell
+     * @return the local date 
+     */
     private LocalDate toLocalDate(Date date) {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
-
+    
+           /**
+     * Parses a boolean value from a cell, or returns a default value if the cell is null or unrecognized.
+     *
+     * @param projects
+     * @param managers        
+     * @param officers 
+     * @param applicants
+     * @param inquiries
+     */
+    
     public void resolveProjectReferences(List<Project> projects,
                                      List<Manager> managers,
                                      List<Officer> officers,

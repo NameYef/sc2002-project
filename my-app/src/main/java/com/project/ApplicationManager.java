@@ -1,15 +1,32 @@
-// Helper class to manage applications
+/**
+ * [Helper class responsible for managing the application process for housing projects.]
+ */
 package com.project;
+
 import java.util.Scanner;
 import java.util.List;
 
+/**
+ * [Handles the application logic for a given applicant.]
+ */
 class ApplicationManager {
     private Applicant applicant;
-    
+
+    /**
+     * [Constructor that initializes the manager with the specified applicant.]
+     *
+     * @param applicant [The applicant who is applying for a project.]
+     */
     public ApplicationManager(Applicant applicant) {
         this.applicant = applicant;
     }
-    
+
+    /**
+     * [Allows the applicant to apply for one of the eligible housing projects.]
+     *
+     * @param scanner [Scanner used for user input.]
+     * @param eligibleProjects [List of projects the applicant is eligible to apply for.]
+     */
     public void applyForProject(Scanner scanner, List<Project> eligibleProjects) {
         if (!applicant.getApplicationStatus().equals("Unsuccessful")) {
             System.out.println("You have already applied for a project.");
@@ -18,7 +35,7 @@ class ApplicationManager {
 
         UIHelper.printProjectHeader("Available Projects you can apply for:");
         int i = 1;
-        for (Project projects: eligibleProjects) {
+        for (Project projects : eligibleProjects) {
             System.out.println(i + ":" + projects.getName());
             i++;
         }
@@ -45,7 +62,7 @@ class ApplicationManager {
 
         System.out.println("Select flat type: 1 for Type1, 2 for Type2");
         String inputType = scanner.nextLine().trim();
-        
+
         ProjectEligibilityChecker checker = new ProjectEligibilityChecker(
             applicant.getMaritalStatus(), applicant.getAge());
 
@@ -71,7 +88,14 @@ class ApplicationManager {
                 break;
         }
     }
-    
+
+    /**
+     * [Finalizes the application for the selected project and updates applicant/project data.]
+     *
+     * @param project [The project the applicant is applying to.]
+     * @param type [The flat type identifier, e.g., "type1" or "type2".]
+     * @param flatType [The actual flat type name.]
+     */
     private void completeApplication(Project project, String type, String flatType) {
         applicant.setAppliedProject(project);
         applicant.setAppliedType(type);

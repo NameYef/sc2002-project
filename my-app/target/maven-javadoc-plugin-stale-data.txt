@@ -1,0 +1,56 @@
+-J-Duser.language=
+-J-Duser.country=
+@options
+@packages
+-classpath
+'/home/jeff/.m2/repository/org/apache/poi/poi-ooxml/5.2.3/poi-ooxml-5.2.3.jar:/home/jeff/.m2/repository/org/apache/poi/poi/5.2.3/poi-5.2.3.jar:/home/jeff/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar:/home/jeff/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:/home/jeff/.m2/repository/com/zaxxer/SparseBitSet/1.2/SparseBitSet-1.2.jar:/home/jeff/.m2/repository/org/apache/poi/poi-ooxml-lite/5.2.3/poi-ooxml-lite-5.2.3.jar:/home/jeff/.m2/repository/org/apache/xmlbeans/xmlbeans/5.1.1/xmlbeans-5.1.1.jar:/home/jeff/.m2/repository/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar:/home/jeff/.m2/repository/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar:/home/jeff/.m2/repository/com/github/virtuald/curvesapi/1.07/curvesapi-1.07.jar:/home/jeff/.m2/repository/org/apache/logging/log4j/log4j-api/2.18.0/log4j-api-2.18.0.jar:/home/jeff/.m2/repository/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2025. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'my-app 1.0-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'my-app 1.0-SNAPSHOT API'
+com.project
+/home/jeff/.m2/repository/org/apache/poi/poi-ooxml/5.2.3/poi-ooxml-5.2.3.jar = 1743561099220
+/home/jeff/.m2/repository/org/apache/poi/poi/5.2.3/poi-5.2.3.jar = 1743561099960
+/home/jeff/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar = 1743561097012
+/home/jeff/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar = 1743561101068
+/home/jeff/.m2/repository/com/zaxxer/SparseBitSet/1.2/SparseBitSet-1.2.jar = 1743561094865
+/home/jeff/.m2/repository/org/apache/poi/poi-ooxml-lite/5.2.3/poi-ooxml-lite-5.2.3.jar = 1743561103404
+/home/jeff/.m2/repository/org/apache/xmlbeans/xmlbeans/5.1.1/xmlbeans-5.1.1.jar = 1743561100912
+/home/jeff/.m2/repository/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar = 1743561100772
+/home/jeff/.m2/repository/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar = 1625881379000
+/home/jeff/.m2/repository/com/github/virtuald/curvesapi/1.07/curvesapi-1.07.jar = 1743561100188
+/home/jeff/.m2/repository/org/apache/logging/log4j/log4j-api/2.18.0/log4j-api-2.18.0.jar = 1743561100588
+/home/jeff/.m2/repository/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar = 1743561101656
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/src/main/java = 1743475113676
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/member-search-index.js = 1745461589663
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/search.js = 1745461589695
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/index-all.html = 1745461589687
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/package-search-index.js = 1745461589663
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/index.html = 1745461589691
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/element-list = 1745461589555
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/type-search-index.js = 1745461589663
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/module-search-index.js = 1745461589663
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/script.js = 1745461589695
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/help-doc.html = 1745461589691
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/jquery-ui.overrides.css = 1745461589699
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/allclasses-index.html = 1745461589659
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/allpackages-index.html = 1745461589663
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/stylesheet.css = 1745461589695
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/overview-tree.html = 1745461589639
+/home/jeff/Documents/y3s2/SC2002/project/sc2002-project/my-app/target/reports/apidocs/tag-search-index.js = 1745461589663
