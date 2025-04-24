@@ -183,7 +183,7 @@ public class Manager extends User {
 							if (conflict != null) {
 								System.out.println("Your project dates overlap with project: " + conflict.getName());
 								UIHelper.printDivider();
-								System.out.println(conflict +" Project Range: " + conflict.getOpenDate() + " to " + conflict.getCloseDate());
+								System.out.println(conflict.getName() +" Project Range: " + conflict.getOpenDate() + " to " + conflict.getCloseDate());
 								UIHelper.printDivider();
 								return;
 							}
@@ -308,7 +308,7 @@ public class Manager extends User {
 							if (conflict != null) {
 								System.out.println("Your project dates overlap with project: " + conflict.getName());
 								UIHelper.printDivider();
-								System.out.println(conflict +" Project Range: " + conflict.getOpenDate() + " to " + conflict.getCloseDate());
+								System.out.println(conflict.getName() +" Project Range: " + conflict.getOpenDate() + " to " + conflict.getCloseDate());
 								UIHelper.printDivider();
 								return;
 							}
