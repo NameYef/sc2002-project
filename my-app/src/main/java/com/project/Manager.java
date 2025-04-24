@@ -417,7 +417,7 @@ public class Manager extends User {
 	        return;
 	    }
 
-	    UIHelper.printSubHeader("Pending Officers for : " + selectedProject.getName());
+	    UIHelper.printProjectHeader("Pending Officers for: " + selectedProject.getName());
 	    for (Officer officer : pendingOfficers) {
 	        UIHelper.printField("Name", officer.getName());
 	        UIHelper.printField("NRIC", officer.getNric());
